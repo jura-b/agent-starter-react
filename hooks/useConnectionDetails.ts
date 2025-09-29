@@ -17,14 +17,20 @@ export default function useConnectionDetails(appConfig: AppConfig) {
 
   const [connectionDetails, setConnectionDetails] = useState<ConnectionDetails | null>(null);
 
-  const fetchConnectionDetails = useCallback(async (roomName?: string) => {
+  const fetchConnectionDetails = useCallback(async (connectionData?: {
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+  }) => {
     setConnectionDetails(null);
     const url = new URL(
       process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details',
       window.location.origin
     );
 
+
     let data: ConnectionDetails;
+
     try {
       const res = await fetch(url.toString(), {
         method: 'POST',
@@ -33,11 +39,13 @@ export default function useConnectionDetails(appConfig: AppConfig) {
           'X-Sandbox-Id': appConfig.sandboxId ?? '',
         },
         body: JSON.stringify({
-          room_name: roomName,
+          room_name: connectionData?.roomName,
+          from_phone_number: connectionData?.fromPhoneNumber,
+          destination_phone_number: connectionData?.destinationPhoneNumber,
           room_config: appConfig.agentName
             ? {
-                agents: [{ agent_name: appConfig.agentName }],
-              }
+              agents: [{ agent_name: appConfig.agentName }],
+            }
             : undefined,
         }),
       });
@@ -51,9 +59,6 @@ export default function useConnectionDetails(appConfig: AppConfig) {
     return data;
   }, []);
 
-  useEffect(() => {
-    fetchConnectionDetails();
-  }, [fetchConnectionDetails]);
 
   const isConnectionDetailsExpired = useCallback(() => {
     const token = connectionDetails?.participantToken;
@@ -71,9 +76,13 @@ export default function useConnectionDetails(appConfig: AppConfig) {
     return expiresAt <= now;
   }, [connectionDetails?.participantToken]);
 
-  const existingOrRefreshConnectionDetails = useCallback(async (roomName?: string) => {
+  const existingOrRefreshConnectionDetails = useCallback(async (connectionData?: {
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+  }) => {
     if (isConnectionDetailsExpired() || !connectionDetails) {
-      return fetchConnectionDetails(roomName);
+      return fetchConnectionDetails(connectionData);
     } else {
       return connectionDetails;
     }

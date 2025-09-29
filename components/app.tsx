@@ -21,7 +21,11 @@ interface AppProps {
 export function App({ appConfig }: AppProps) {
   const room = useMemo(() => new Room(), []);
   const [sessionStarted, setSessionStarted] = useState(false);
-  const [roomName, setRoomName] = useState<string | undefined>(undefined);
+  const [connectionData, setConnectionData] = useState<{
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+  } | undefined>(undefined);
   const { refreshConnectionDetails, existingOrRefreshConnectionDetails } =
     useConnectionDetails(appConfig);
 
@@ -47,11 +51,13 @@ export function App({ appConfig }: AppProps) {
   useEffect(() => {
     let aborted = false;
     if (sessionStarted && room.state === 'disconnected') {
+      console.log('connectionData2', connectionData);
+
       Promise.all([
         room.localParticipant.setMicrophoneEnabled(true, undefined, {
           preConnectBuffer: appConfig.isPreConnectBufferEnabled,
         }),
-        existingOrRefreshConnectionDetails(roomName).then((connectionDetails) =>
+        refreshConnectionDetails(connectionData).then((connectionDetails) =>
           room.connect(connectionDetails.serverUrl, connectionDetails.participantToken)
         ),
       ]).catch((error) => {
@@ -74,7 +80,7 @@ export function App({ appConfig }: AppProps) {
       aborted = true;
       room.disconnect();
     };
-  }, [room, sessionStarted, appConfig.isPreConnectBufferEnabled, roomName]);
+  }, [room, sessionStarted, appConfig.isPreConnectBufferEnabled]);
 
   const { startButtonText } = appConfig;
 
@@ -83,8 +89,8 @@ export function App({ appConfig }: AppProps) {
       <MotionWelcome
         key="welcome"
         startButtonText={startButtonText}
-        onStartCall={(name) => {
-          setRoomName(name);
+        onStartCall={(data) => {
+          setConnectionData(data);
           setSessionStarted(true);
         }}
         disabled={sessionStarted}

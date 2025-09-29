@@ -5,7 +5,11 @@ import { cn } from '@/lib/utils';
 interface WelcomeProps {
   disabled: boolean;
   startButtonText: string;
-  onStartCall: (roomName?: string) => void;
+  onStartCall: (data: {
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+  }) => void;
 }
 
 export const Welcome = ({
@@ -34,17 +38,29 @@ export const Welcome = ({
   };
 
   const handleStartCall = () => {
-    if (!fromPhoneNumber.trim()) {
-      alert('From phone number is required');
-      return;
-    }
-    if (!destinationPhoneNumber.trim()) {
-      alert('Destination phone number is required');
+    // Validate all required fields
+    const roomName = getRoomName();
+
+    if (!roomName || roomName === 'web') {
+      alert('Room name is required. Please enter phone numbers.');
       return;
     }
 
-    const roomName = getRoomName();
-    onStartCall(roomName);
+    if (!fromPhoneNumber.trim() || fromPhoneNumber.trim() === '+66') {
+      alert('From phone number is required. Please enter a complete phone number.');
+      return;
+    }
+
+    if (!destinationPhoneNumber.trim() || destinationPhoneNumber.trim() === '+66') {
+      alert('Destination phone number is required. Please enter a complete phone number.');
+      return;
+    }
+
+    onStartCall({
+      roomName,
+      fromPhoneNumber: fromPhoneNumber.trim(),
+      destinationPhoneNumber: destinationPhoneNumber.trim()
+    });
   };
 
   return (

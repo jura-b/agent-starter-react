@@ -29,10 +29,13 @@ export async function POST(req: Request) {
       throw new Error('LIVEKIT_API_SECRET is not defined');
     }
 
-    // Parse agent configuration and room name from request body
+
+    // Parse agent configuration, room name and phone numbers from request body
     const body = await req.json();
     const agentName: string = body?.room_config?.agents?.[0]?.agent_name;
-    const customRoomName: string | undefined = body?.room_name;
+    const customRoomName: string = body?.room_name;
+    const fromPhoneNumber: string = body?.from_phone_number || '';
+    const destinationPhoneNumber: string = body?.destination_phone_number || '';
 
     // Generate participant token
     const participantName = 'user';
@@ -40,9 +43,17 @@ export async function POST(req: Request) {
     const roomName = customRoomName || `voice_assistant_room_${Math.floor(Math.random() * 10_000)}`;
 
     const participantToken = await createParticipantToken(
-      { identity: participantIdentity, name: participantName },
+      {
+        identity: participantIdentity,
+        name: participantName,
+        attributes: {
+          "sip.phoneNumber": fromPhoneNumber,
+          "sip.trunkPhoneNumber": destinationPhoneNumber
+        },
+        ttl: '60m',
+      },
       roomName,
-      agentName
+      agentName,
     );
 
     // Return connection details
@@ -67,12 +78,10 @@ export async function POST(req: Request) {
 function createParticipantToken(
   userInfo: AccessTokenOptions,
   roomName: string,
-  agentName?: string
+  agentName?: string,
 ): Promise<string> {
-  const at = new AccessToken(API_KEY, API_SECRET, {
-    ...userInfo,
-    ttl: '15m',
-  });
+  const at = new AccessToken(API_KEY, API_SECRET, userInfo);
+
   const grant: VideoGrant = {
     room: roomName,
     roomJoin: true,
