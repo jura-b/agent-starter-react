@@ -21,13 +21,15 @@ interface AppProps {
 export function App({ appConfig }: AppProps) {
   const room = useMemo(() => new Room(), []);
   const [sessionStarted, setSessionStarted] = useState(false);
-  const [connectionData, setConnectionData] = useState<{
-    roomName: string;
-    fromPhoneNumber: string;
-    destinationPhoneNumber: string;
-  } | undefined>(undefined);
-  const { refreshConnectionDetails, existingOrRefreshConnectionDetails } =
-    useConnectionDetails(appConfig);
+  const [connectionData, setConnectionData] = useState<
+    | {
+        roomName: string;
+        fromPhoneNumber: string;
+        destinationPhoneNumber: string;
+      }
+    | undefined
+  >(undefined);
+  const { refreshConnectionDetails } = useConnectionDetails(appConfig);
 
   useEffect(() => {
     const onDisconnected = () => {
@@ -51,7 +53,6 @@ export function App({ appConfig }: AppProps) {
   useEffect(() => {
     let aborted = false;
     if (sessionStarted && room.state === 'disconnected') {
-
       Promise.all([
         room.localParticipant.setMicrophoneEnabled(true, undefined, {
           preConnectBuffer: appConfig.isPreConnectBufferEnabled,
@@ -79,7 +80,13 @@ export function App({ appConfig }: AppProps) {
       aborted = true;
       room.disconnect();
     };
-  }, [room, sessionStarted, appConfig.isPreConnectBufferEnabled]);
+  }, [
+    room,
+    sessionStarted,
+    appConfig.isPreConnectBufferEnabled,
+    connectionData,
+    refreshConnectionDetails,
+  ]);
 
   const { startButtonText } = appConfig;
 

@@ -17,48 +17,49 @@ export default function useConnectionDetails(appConfig: AppConfig) {
 
   const [connectionDetails, setConnectionDetails] = useState<ConnectionDetails | null>(null);
 
-  const fetchConnectionDetails = useCallback(async (connectionData?: {
-    roomName: string;
-    fromPhoneNumber: string;
-    destinationPhoneNumber: string;
-  }) => {
-    setConnectionDetails(null);
-    const url = new URL(
-      process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details',
-      window.location.origin
-    );
+  const fetchConnectionDetails = useCallback(
+    async (connectionData?: {
+      roomName: string;
+      fromPhoneNumber: string;
+      destinationPhoneNumber: string;
+    }) => {
+      setConnectionDetails(null);
+      const url = new URL(
+        process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details',
+        window.location.origin
+      );
 
+      let data: ConnectionDetails;
 
-    let data: ConnectionDetails;
+      try {
+        const res = await fetch(url.toString(), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Sandbox-Id': appConfig.sandboxId ?? '',
+          },
+          body: JSON.stringify({
+            room_name: connectionData?.roomName,
+            from_phone_number: connectionData?.fromPhoneNumber,
+            destination_phone_number: connectionData?.destinationPhoneNumber,
+            room_config: appConfig.agentName
+              ? {
+                agents: [{ agent_name: appConfig.agentName }],
+              }
+              : undefined,
+          }),
+        });
+        data = await res.json();
+      } catch (error) {
+        console.error('Error fetching connection details:', error);
+        throw new Error('Error fetching connection details!');
+      }
 
-    try {
-      const res = await fetch(url.toString(), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Sandbox-Id': appConfig.sandboxId ?? '',
-        },
-        body: JSON.stringify({
-          room_name: connectionData?.roomName,
-          from_phone_number: connectionData?.fromPhoneNumber,
-          destination_phone_number: connectionData?.destinationPhoneNumber,
-          room_config: appConfig.agentName
-            ? {
-              agents: [{ agent_name: appConfig.agentName }],
-            }
-            : undefined,
-        }),
-      });
-      data = await res.json();
-    } catch (error) {
-      console.error('Error fetching connection details:', error);
-      throw new Error('Error fetching connection details!');
-    }
-
-    setConnectionDetails(data);
-    return data;
-  }, []);
-
+      setConnectionDetails(data);
+      return data;
+    },
+    [appConfig]
+  );
 
   const isConnectionDetailsExpired = useCallback(() => {
     const token = connectionDetails?.participantToken;
@@ -76,17 +77,20 @@ export default function useConnectionDetails(appConfig: AppConfig) {
     return expiresAt <= now;
   }, [connectionDetails?.participantToken]);
 
-  const existingOrRefreshConnectionDetails = useCallback(async (connectionData?: {
-    roomName: string;
-    fromPhoneNumber: string;
-    destinationPhoneNumber: string;
-  }) => {
-    if (isConnectionDetailsExpired() || !connectionDetails) {
-      return fetchConnectionDetails(connectionData);
-    } else {
-      return connectionDetails;
-    }
-  }, [connectionDetails, fetchConnectionDetails, isConnectionDetailsExpired]);
+  const existingOrRefreshConnectionDetails = useCallback(
+    async (connectionData?: {
+      roomName: string;
+      fromPhoneNumber: string;
+      destinationPhoneNumber: string;
+    }) => {
+      if (isConnectionDetailsExpired() || !connectionDetails) {
+        return fetchConnectionDetails(connectionData);
+      } else {
+        return connectionDetails;
+      }
+    },
+    [connectionDetails, fetchConnectionDetails, isConnectionDetailsExpired]
+  );
 
   return {
     connectionDetails,

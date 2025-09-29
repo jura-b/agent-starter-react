@@ -29,7 +29,6 @@ export async function POST(req: Request) {
       throw new Error('LIVEKIT_API_SECRET is not defined');
     }
 
-
     // Parse agent configuration, room name and phone numbers from request body
     const body = await req.json();
     const agentName: string = body?.room_config?.agents?.[0]?.agent_name;
@@ -47,13 +46,13 @@ export async function POST(req: Request) {
         identity: participantIdentity,
         name: participantName,
         attributes: {
-          "sip.phoneNumber": fromPhoneNumber,
-          "sip.trunkPhoneNumber": destinationPhoneNumber
+          'sip.phoneNumber': fromPhoneNumber,
+          'sip.trunkPhoneNumber': destinationPhoneNumber,
         },
         ttl: '60m',
       },
       roomName,
-      agentName,
+      agentName
     );
 
     // Return connection details
@@ -78,7 +77,7 @@ export async function POST(req: Request) {
 function createParticipantToken(
   userInfo: AccessTokenOptions,
   roomName: string,
-  agentName?: string,
+  agentName?: string
 ): Promise<string> {
   const at = new AccessToken(API_KEY, API_SECRET, userInfo);
 
