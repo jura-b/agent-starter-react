@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface WelcomeProps {
   disabled: boolean;
   startButtonText: string;
-  onStartCall: () => void;
+  onStartCall: (roomName?: string) => void;
 }
 
 export const Welcome = ({
@@ -13,6 +14,39 @@ export const Welcome = ({
   onStartCall,
   ref,
 }: React.ComponentProps<'div'> & WelcomeProps) => {
+  const [fromPhoneNumber, setFromPhoneNumber] = useState('+66');
+  const [destinationPhoneNumber, setDestinationPhoneNumber] = useState('+66');
+  const [suffix, setSuffix] = useState('');
+
+  // Construct room name for preview
+  const getRoomName = () => {
+    const roomParts = ['web'];
+    if (fromPhoneNumber.trim()) {
+      roomParts.push(fromPhoneNumber.trim());
+    }
+    if (destinationPhoneNumber.trim()) {
+      roomParts.push(destinationPhoneNumber.trim());
+    }
+    if (suffix.trim()) {
+      roomParts.push(suffix.trim());
+    }
+    return roomParts.join('_');
+  };
+
+  const handleStartCall = () => {
+    if (!fromPhoneNumber.trim()) {
+      alert('From phone number is required');
+      return;
+    }
+    if (!destinationPhoneNumber.trim()) {
+      alert('Destination phone number is required');
+      return;
+    }
+
+    const roomName = getRoomName();
+    onStartCall(roomName);
+  };
+
   return (
     <section
       ref={ref}
@@ -39,7 +73,73 @@ export const Welcome = ({
       <p className="text-fg1 max-w-prose pt-1 leading-6 font-medium">
         Chat live with your voice AI agent
       </p>
-      <Button variant="primary" size="lg" onClick={onStartCall} className="mt-6 w-64 font-mono">
+
+      <div className="mt-6 space-y-3 w-64">
+        <div>
+          <label className="block text-sm font-medium text-fg1 mb-1">Prefix</label>
+          <input
+            type="text"
+            value="web"
+            disabled
+            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-fg1 mb-1">
+            From Phone Number <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={fromPhoneNumber}
+            onChange={(e) => setFromPhoneNumber(e.target.value)}
+            placeholder="Enter from phone number"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-fg1 mb-1">
+            Destination Phone Number <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={destinationPhoneNumber}
+            onChange={(e) => setDestinationPhoneNumber(e.target.value)}
+            placeholder="Enter destination phone number"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-fg1 mb-1">
+            Suffix <span className="text-gray-500">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={suffix}
+            onChange={(e) => setSuffix(e.target.value)}
+            placeholder="Enter suffix"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black"
+          />
+        </div>
+      </div>
+
+      {(fromPhoneNumber || destinationPhoneNumber) && (
+        <div className="mt-4 w-64 p-3 bg-gray-50 rounded-md border border-gray-200">
+          <p className="text-sm text-gray-600">Your LiveKit room name will be:</p>
+          <p className="text-sm font-mono font-semibold text-black mt-1 break-all">{getRoomName()}</p>
+        </div>
+      )}
+
+      <Button
+        variant="primary"
+        size="lg"
+        onClick={handleStartCall}
+        className="mt-6 w-64 font-mono"
+      >
         {startButtonText}
       </Button>
       <footer className="fixed bottom-5 left-0 z-20 flex w-full items-center justify-center">

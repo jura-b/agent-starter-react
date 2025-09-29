@@ -1,9 +1,9 @@
 import type { AppConfig } from './lib/types';
 
 export const APP_CONFIG_DEFAULTS: AppConfig = {
-  companyName: 'LiveKit',
-  pageTitle: 'LiveKit Voice Agent',
-  pageDescription: 'A voice agent built with LiveKit',
+  companyName: '100,000,000X',
+  pageTitle: '100,000,000X Agent',
+  pageDescription: '100,000,000X Voice Agent',
 
   supportsChatInput: true,
   supportsVideoInput: true,
@@ -14,7 +14,7 @@ export const APP_CONFIG_DEFAULTS: AppConfig = {
   accent: '#002cf2',
   logoDark: '/lk-logo-dark.svg',
   accentDark: '#1fd5f9',
-  startButtonText: 'Start call',
+  startButtonText: 'Simulate SIP-like Call',
 
   agentName: process.env.AGENT_NAME,
 };

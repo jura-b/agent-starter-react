@@ -17,7 +17,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
 
   const [connectionDetails, setConnectionDetails] = useState<ConnectionDetails | null>(null);
 
-  const fetchConnectionDetails = useCallback(async () => {
+  const fetchConnectionDetails = useCallback(async (roomName?: string) => {
     setConnectionDetails(null);
     const url = new URL(
       process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details',
@@ -33,6 +33,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
           'X-Sandbox-Id': appConfig.sandboxId ?? '',
         },
         body: JSON.stringify({
+          room_name: roomName,
           room_config: appConfig.agentName
             ? {
                 agents: [{ agent_name: appConfig.agentName }],
@@ -70,9 +71,9 @@ export default function useConnectionDetails(appConfig: AppConfig) {
     return expiresAt <= now;
   }, [connectionDetails?.participantToken]);
 
-  const existingOrRefreshConnectionDetails = useCallback(async () => {
+  const existingOrRefreshConnectionDetails = useCallback(async (roomName?: string) => {
     if (isConnectionDetailsExpired() || !connectionDetails) {
-      return fetchConnectionDetails();
+      return fetchConnectionDetails(roomName);
     } else {
       return connectionDetails;
     }
