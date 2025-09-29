@@ -51,7 +51,6 @@ export function App({ appConfig }: AppProps) {
   useEffect(() => {
     let aborted = false;
     if (sessionStarted && room.state === 'disconnected') {
-      console.log('connectionData2', connectionData);
 
       Promise.all([
         room.localParticipant.setMicrophoneEnabled(true, undefined, {
