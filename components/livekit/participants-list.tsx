@@ -24,29 +24,25 @@ export const ParticipantsList = () => {
             >
               <button
                 onClick={() => setExpandedParticipant(isExpanded ? null : participant.sid)}
-                className="w-full p-2 text-left hover:bg-gray-700/30 transition-colors"
+                className="w-full p-2 text-left transition-colors hover:bg-gray-700/30"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 text-sm text-gray-300">
                     <div
                       className={cn(
                         'h-2 w-2 rounded-full',
-                        participant.isSpeaking ? 'bg-green-500 animate-pulse' : 'bg-gray-500'
+                        participant.isSpeaking ? 'animate-pulse bg-green-500' : 'bg-gray-500'
                       )}
                     />
                     <span>{participant.isAgent ? '🤖' : '🤷🏾‍♂️'} </span>
                     <ParticipantName participant={participant} />
-                    {participant.isAgent && (
-                      <span className="text-xs text-gray-400">(Agent)</span>
-                    )}
-                    {participant.isLocal && (
-                      <span className="text-xs text-gray-400">(You)</span>
-                    )}
+                    {participant.isAgent && <span className="text-xs text-gray-400">(Agent)</span>}
+                    {participant.isLocal && <span className="text-xs text-gray-400">(You)</span>}
                   </div>
                   <svg
                     className={cn(
                       'h-4 w-4 text-gray-400 transition-transform',
-                      isExpanded && 'transform rotate-180'
+                      isExpanded && 'rotate-180 transform'
                     )}
                     fill="none"
                     stroke="currentColor"
@@ -63,7 +59,7 @@ export const ParticipantsList = () => {
               </button>
 
               {isExpanded && (
-                <div className="border-t border-gray-700/50 p-3 text-xs text-gray-400 space-y-1">
+                <div className="space-y-1 border-t border-gray-700/50 p-3 text-xs text-gray-400">
                   <div>
                     <span className="font-semibold">Identity:</span> {participant.identity}
                   </div>

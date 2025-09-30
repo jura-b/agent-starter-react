@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useRoomContext, useConnectionState, useParticipants } from '@livekit/components-react';
 import { ConnectionState } from 'livekit-client';
+import { useConnectionState, useParticipants, useRoomContext } from '@livekit/components-react';
 import { cn } from '@/lib/utils';
 
 export const RoomInfo = () => {
@@ -40,8 +40,8 @@ export const RoomInfo = () => {
     }
   };
 
-  const agentCount = participants.filter(p => p.isAgent).length;
-  const userCount = participants.filter(p => !p.isAgent).length;
+  const agentCount = participants.filter((p) => p.isAgent).length;
+  const userCount = participants.filter((p) => !p.isAgent).length;
 
   return (
     <div className="fixed top-4 right-4 z-100 min-w-[200px] rounded-lg border border-gray-700 bg-gray-900/90 p-4 backdrop-blur-sm">
@@ -59,20 +59,20 @@ export const RoomInfo = () => {
 
         {/* Room Name */}
         <div className="flex items-start justify-between space-x-2">
-          <span className="text-gray-400 whitespace-nowrap">Room:</span>
-          <span className="text-gray-300 text-right break-all">{room.name || 'Unknown'}</span>
+          <span className="whitespace-nowrap text-gray-400">Room:</span>
+          <span className="text-right break-all text-gray-300">{room.name || 'Unknown'}</span>
         </div>
 
         {/* activeRecording */}
         <div className="flex items-start justify-between space-x-2">
-          <span className="text-gray-400 whitespace-nowrap">Is Recording:</span>
-          <span className="text-gray-300 text-right break-all font-mono text-[10px]">
+          <span className="whitespace-nowrap text-gray-400">Is Recording:</span>
+          <span className="text-right font-mono text-[10px] break-all text-gray-300">
             {room.isRecording ? 'Yes' : 'No'}
           </span>
         </div>
 
         {/* Participants Breakdown */}
-        <div className="border-t border-gray-700/50 pt-2 mt-2">
+        <div className="mt-2 border-t border-gray-700/50 pt-2">
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Users:</span>
             <span className="text-gray-300">{userCount}</span>
@@ -88,7 +88,7 @@ export const RoomInfo = () => {
         </div>
 
         {/* Session Time */}
-        <div className="border-t border-gray-700/50 pt-2 mt-2">
+        <div className="mt-2 border-t border-gray-700/50 pt-2">
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Started:</span>
             <span className="text-gray-300">

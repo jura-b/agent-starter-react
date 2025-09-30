@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     const randomNumber = Math.floor(Math.random() * 10_000);
     const participantName = `user_${randomNumber}`;
     const participantIdentity = `voice_assistant_user_${randomNumber}`;
-    const roomName = customRoomName
+    const roomName = customRoomName;
 
     const participantToken = await createParticipantToken(
       {
