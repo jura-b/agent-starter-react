@@ -44,8 +44,8 @@ export default function useConnectionDetails(appConfig: AppConfig) {
             destination_phone_number: connectionData?.destinationPhoneNumber,
             room_config: appConfig.agentName
               ? {
-                agents: [{ agent_name: appConfig.agentName }],
-              }
+                  agents: [{ agent_name: appConfig.agentName }],
+                }
               : undefined,
           }),
         });

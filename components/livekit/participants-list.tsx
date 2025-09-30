@@ -1,0 +1,91 @@
+'use client';
+
+import React, { useState } from 'react';
+import { ParticipantName, useParticipants } from '@livekit/components-react';
+import { cn } from '@/lib/utils';
+
+export const ParticipantsList = () => {
+  const participants = useParticipants();
+  const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
+
+  return (
+    <div className="fixed top-4 left-4 z-100 max-w-sm rounded-lg border border-gray-700 bg-gray-900/90 p-4 backdrop-blur-sm">
+      <h3 className="mb-3 text-sm font-semibold text-gray-200">
+        Room Participants ({participants.length})
+      </h3>
+      <div className="space-y-2">
+        {participants.map((participant) => {
+          const isExpanded = expandedParticipant === participant.sid;
+
+          return (
+            <div
+              key={participant.sid}
+              className="rounded-md border border-gray-700/50 bg-gray-800/50"
+            >
+              <button
+                onClick={() => setExpandedParticipant(isExpanded ? null : participant.sid)}
+                className="w-full p-2 text-left hover:bg-gray-700/30 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-sm text-gray-300">
+                    <div
+                      className={cn(
+                        'h-2 w-2 rounded-full',
+                        participant.isSpeaking ? 'bg-green-500 animate-pulse' : 'bg-gray-500'
+                      )}
+                    />
+                    <span>{participant.isAgent ? '🤖' : '🤷🏾‍♂️'} </span>
+                    <ParticipantName participant={participant} />
+                    {participant.isAgent && (
+                      <span className="text-xs text-gray-400">(Agent)</span>
+                    )}
+                    {participant.isLocal && (
+                      <span className="text-xs text-gray-400">(You)</span>
+                    )}
+                  </div>
+                  <svg
+                    className={cn(
+                      'h-4 w-4 text-gray-400 transition-transform',
+                      isExpanded && 'transform rotate-180'
+                    )}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </button>
+
+              {isExpanded && (
+                <div className="border-t border-gray-700/50 p-3 text-xs text-gray-400 space-y-1">
+                  <div>
+                    <span className="font-semibold">Identity:</span> {participant.identity}
+                  </div>
+                  <div>
+                    <span className="font-semibold">SID:</span> {participant.sid}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Status:</span>{' '}
+                    {participant.connectionQuality || 'Unknown'}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Joined:</span>{' '}
+                    {participant.joinedAt
+                      ? new Date(participant.joinedAt).toLocaleTimeString()
+                      : 'Unknown'}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};

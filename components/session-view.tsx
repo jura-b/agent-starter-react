@@ -13,6 +13,8 @@ import { AgentControlBar } from '@/components/livekit/agent-control-bar/agent-co
 import { ChatEntry } from '@/components/livekit/chat/chat-entry';
 import { ChatMessageView } from '@/components/livekit/chat/chat-message-view';
 import { MediaTiles } from '@/components/livekit/media-tiles';
+import { ParticipantsList } from '@/components/livekit/participants-list';
+import { RoomInfo } from '@/components/livekit/room-info';
 import useChatAndTranscription from '@/hooks/useChatAndTranscription';
 import { useDebugMode } from '@/hooks/useDebug';
 import type { AppConfig } from '@/lib/types';
@@ -99,6 +101,9 @@ export const SessionView = ({
         !chatOpen && 'max-h-svh overflow-hidden'
       )}
     >
+      <ParticipantsList />
+      <RoomInfo />
+
       <ChatMessageView
         className={cn(
           'mx-auto min-h-svh w-full max-w-2xl px-3 pt-32 pb-40 transition-[opacity,translate] duration-300 ease-out md:px-0 md:pt-36 md:pb-48',
@@ -173,6 +178,6 @@ export const SessionView = ({
           <div className="from-background border-background absolute top-0 left-0 h-12 w-full -translate-y-full bg-gradient-to-t to-transparent" />
         </motion.div>
       </div>
-    </section>
+    </section >
   );
 };
