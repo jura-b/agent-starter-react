@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ConnectionState } from 'livekit-client';
 import { useConnectionState, useParticipants, useRoomContext } from '@livekit/components-react';
 import { cn } from '@/lib/utils';
@@ -9,6 +9,7 @@ export const RoomInfo = () => {
   const room = useRoomContext();
   const connectionState = useConnectionState();
   const participants = useParticipants();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const getConnectionColor = () => {
     switch (connectionState) {
@@ -44,10 +45,29 @@ export const RoomInfo = () => {
   const userCount = participants.filter((p) => !p.isAgent).length;
 
   return (
-    <div className="fixed top-4 right-4 z-100 min-w-[200px] rounded-lg border border-gray-700 bg-gray-900/90 p-4 backdrop-blur-sm">
-      <h3 className="mb-3 text-sm font-semibold text-gray-200">Room Info</h3>
+    <div
+      className={cn(
+        'fixed top-4 right-4 z-100 min-w-[200px] rounded-lg border border-gray-700 bg-gray-900/90 backdrop-blur-sm transition-transform duration-300',
+        isCollapsed ? 'translate-x-[calc(100%-2.5rem)]' : 'translate-x-0'
+      )}
+    >
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute top-2 left-2 z-10 rounded p-1 text-gray-400 transition-colors hover:bg-gray-700/50 hover:text-gray-200"
+      >
+        <svg
+          className={cn('h-4 w-4 transition-transform', isCollapsed && 'rotate-180')}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      <div className={cn('p-4 transition-opacity duration-300', isCollapsed && 'opacity-0 pointer-events-none')}>
+        <h3 className="mb-3 text-sm font-semibold text-gray-200">Room Info</h3>
 
-      <div className="space-y-2 text-xs">
+        <div className="space-y-2 text-xs">
         {/* Connection Status */}
         <div className="flex items-center justify-between">
           <span className="text-gray-400">Status:</span>
@@ -96,6 +116,7 @@ export const RoomInfo = () => {
             </span>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

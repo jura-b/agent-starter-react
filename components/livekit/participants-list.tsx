@@ -7,12 +7,32 @@ import { cn } from '@/lib/utils';
 export const ParticipantsList = () => {
   const participants = useParticipants();
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="fixed top-4 left-4 z-100 max-w-sm rounded-lg border border-gray-700 bg-gray-900/90 p-4 backdrop-blur-sm">
-      <h3 className="mb-3 text-sm font-semibold text-gray-200">
-        Room Participants ({participants.length})
-      </h3>
+    <div
+      className={cn(
+        'fixed top-4 left-4 z-100 max-w-sm rounded-lg border border-gray-700 bg-gray-900/90 backdrop-blur-sm transition-transform duration-300',
+        isCollapsed ? '-translate-x-[calc(100%-2.5rem)]' : 'translate-x-0'
+      )}
+    >
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute top-2 right-2 z-10 rounded p-1 text-gray-400 transition-colors hover:bg-gray-700/50 hover:text-gray-200"
+      >
+        <svg
+          className={cn('h-4 w-4 transition-transform', isCollapsed && 'rotate-180')}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <div className={cn('p-4 transition-opacity duration-300', isCollapsed && 'opacity-0 pointer-events-none')}>
+        <h3 className="mb-3 text-sm font-semibold text-gray-200">
+          Room Participants ({participants.length})
+        </h3>
       <div className="space-y-2">
         {participants.map((participant) => {
           const isExpanded = expandedParticipant === participant.sid;
@@ -31,7 +51,7 @@ export const ParticipantsList = () => {
                     <div
                       className={cn(
                         'h-2 w-2 rounded-full',
-                        participant.isSpeaking ? 'animate-pulse bg-green-500' : 'bg-gray-500'
+                        participant.isSpeaking ? 'animate-[pulse_0.5s_ease-in-out_infinite] bg-green-500' : 'bg-gray-500'
                       )}
                     />
                     <span>{participant.isAgent ? '🤖' : '🤷🏾‍♂️'} </span>
@@ -81,6 +101,7 @@ export const ParticipantsList = () => {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ConfigPanel } from '@/components/livekit/config-panel';
+import type { AppConfig } from '@/lib/types';
 
 interface WelcomeProps {
   disabled: boolean;
@@ -10,12 +12,14 @@ interface WelcomeProps {
     fromPhoneNumber: string;
     destinationPhoneNumber: string;
   }) => void;
+  appConfig: AppConfig;
 }
 
 export const Welcome = ({
   disabled,
   startButtonText,
   onStartCall,
+  appConfig,
   ref,
 }: React.ComponentProps<'div'> & WelcomeProps) => {
   const [fromPhoneNumber, setFromPhoneNumber] = useState('+66');
@@ -72,6 +76,7 @@ export const Welcome = ({
         disabled ? 'z-10' : 'z-20'
       )}
     >
+      <ConfigPanel appConfig={appConfig} />
       <svg
         width="64"
         height="64"
@@ -92,17 +97,17 @@ export const Welcome = ({
 
       <div className="mt-6 w-64 space-y-3">
         <div>
-          <label className="text-fg1 mb-1 block text-sm font-medium">Prefix</label>
+          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">Prefix</label>
           <input
             type="text"
             value="web"
             disabled
-            className="w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-gray-600"
+            className="w-full cursor-not-allowed rounded-full border border-gray-300 bg-gray-100 px-4 py-2 text-gray-600"
           />
         </div>
 
         <div>
-          <label className="text-fg1 mb-1 block text-sm font-medium">
+          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">
             From Phone Number <span className="text-red-500">*</span>
           </label>
           <input
@@ -110,13 +115,13 @@ export const Welcome = ({
             value={fromPhoneNumber}
             onChange={(e) => setFromPhoneNumber(e.target.value)}
             placeholder="Enter from phone number"
-            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
 
         <div>
-          <label className="text-fg1 mb-1 block text-sm font-medium">
+          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">
             Destination Phone Number <span className="text-red-500">*</span>
           </label>
           <input
@@ -124,13 +129,13 @@ export const Welcome = ({
             value={destinationPhoneNumber}
             onChange={(e) => setDestinationPhoneNumber(e.target.value)}
             placeholder="Enter destination phone number"
-            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
 
         <div>
-          <label className="text-fg1 mb-1 block text-sm font-medium">
+          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">
             Suffix <span className="text-gray-500">(optional)</span>
           </label>
           <input
@@ -138,15 +143,16 @@ export const Welcome = ({
             value={suffix}
             onChange={(e) => setSuffix(e.target.value)}
             placeholder="Enter suffix"
-            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
       </div>
 
       {(fromPhoneNumber || destinationPhoneNumber) && (
-        <div className="mt-4 w-64 rounded-md border border-gray-200 bg-gray-50 p-3">
-          <p className="text-sm text-gray-600">Your LiveKit room name will be:</p>
-          <p className="mt-1 font-mono text-sm font-semibold break-all text-black">
+        <div className="mt-12 w-64 rounded-full border border-gray-600 text-white p-3">
+          <p className="text-sm text-gray-400">LiveKit Room Name</p>
+          <hr className="my-2 border-gray-600" />
+          <p className="mt-1 font-mono text-sm font-semibold break-all text-gray-200">
             {getRoomName()}
           </p>
         </div>
@@ -156,18 +162,7 @@ export const Welcome = ({
         {startButtonText}
       </Button>
       <footer className="fixed bottom-5 left-0 z-20 flex w-full items-center justify-center">
-        <p className="text-fg1 max-w-prose pt-1 text-xs leading-5 font-normal text-pretty md:text-sm">
-          Need help getting set up? Check out the{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://docs.livekit.io/agents/start/voice-ai/"
-            className="underline"
-          >
-            Voice AI quickstart
-          </a>
-          .
-        </p>
+
       </footer>
     </section>
   );

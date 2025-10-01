@@ -15,6 +15,7 @@ import { ChatMessageView } from '@/components/livekit/chat/chat-message-view';
 import { MediaTiles } from '@/components/livekit/media-tiles';
 import { ParticipantsList } from '@/components/livekit/participants-list';
 import { RoomInfo } from '@/components/livekit/room-info';
+import { ConfigPanel } from '@/components/livekit/config-panel';
 import useChatAndTranscription from '@/hooks/useChatAndTranscription';
 import { useDebugMode } from '@/hooks/useDebug';
 import type { AppConfig } from '@/lib/types';
@@ -103,6 +104,8 @@ export const SessionView = ({
     >
       <ParticipantsList />
       <RoomInfo />
+      <ConfigPanel appConfig={appConfig} />
+
 
       <ChatMessageView
         className={cn(
