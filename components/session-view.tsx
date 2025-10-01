@@ -12,10 +12,10 @@ import { toastAlert } from '@/components/alert-toast';
 import { AgentControlBar } from '@/components/livekit/agent-control-bar/agent-control-bar';
 import { ChatEntry } from '@/components/livekit/chat/chat-entry';
 import { ChatMessageView } from '@/components/livekit/chat/chat-message-view';
+import { ConfigPanel } from '@/components/livekit/config-panel';
 import { MediaTiles } from '@/components/livekit/media-tiles';
 import { ParticipantsList } from '@/components/livekit/participants-list';
 import { RoomInfo } from '@/components/livekit/room-info';
-import { ConfigPanel } from '@/components/livekit/config-panel';
 import useChatAndTranscription from '@/hooks/useChatAndTranscription';
 import { useDebugMode } from '@/hooks/useDebug';
 import type { AppConfig } from '@/lib/types';
@@ -105,7 +105,6 @@ export const SessionView = ({
       <ParticipantsList />
       <RoomInfo />
       <ConfigPanel appConfig={appConfig} />
-
 
       <ChatMessageView
         className={cn(
