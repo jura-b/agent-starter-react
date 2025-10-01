@@ -12,7 +12,8 @@ export const APP_CONFIG_DEFAULTS: AppConfig = {
 
   logo: 'https://venngage-wordpress.s3.amazonaws.com/uploads/2022/09/meme_surprised_shocked_pikachu.png',
   accent: '#002cf2',
-  logoDark: 'https://venngage-wordpress.s3.amazonaws.com/uploads/2022/09/meme_surprised_shocked_pikachu.png',
+  logoDark:
+    'https://venngage-wordpress.s3.amazonaws.com/uploads/2022/09/meme_surprised_shocked_pikachu.png',
   accentDark: '#1fd5f9',
   startButtonText: 'Simulate SIP-like Call',
 

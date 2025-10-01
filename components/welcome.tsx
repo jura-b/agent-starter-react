@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { ConfigPanel } from '@/components/livekit/config-panel';
+import { Button } from '@/components/ui/button';
 import type { AppConfig } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 interface WelcomeProps {
   disabled: boolean;
@@ -97,7 +97,7 @@ export const Welcome = ({
 
       <div className="mt-6 w-64 space-y-3">
         <div>
-          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">Prefix</label>
+          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">Prefix</label>
           <input
             type="text"
             value="web"
@@ -107,7 +107,7 @@ export const Welcome = ({
         </div>
 
         <div>
-          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">
+          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
             From Phone Number <span className="text-red-500">*</span>
           </label>
           <input
@@ -121,7 +121,7 @@ export const Welcome = ({
         </div>
 
         <div>
-          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">
+          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
             Destination Phone Number <span className="text-red-500">*</span>
           </label>
           <input
@@ -135,7 +135,7 @@ export const Welcome = ({
         </div>
 
         <div>
-          <label className="pl-4 text-fg1 mb-1 block text-sm font-medium text-left">
+          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
             Suffix <span className="text-gray-500">(optional)</span>
           </label>
           <input
@@ -149,7 +149,7 @@ export const Welcome = ({
       </div>
 
       {(fromPhoneNumber || destinationPhoneNumber) && (
-        <div className="mt-12 w-64 rounded-full border border-gray-600 text-white p-3">
+        <div className="mt-12 w-64 rounded-full border border-gray-600 p-3 text-white">
           <p className="text-sm text-gray-400">LiveKit Room Name</p>
           <hr className="my-2 border-gray-600" />
           <p className="mt-1 font-mono text-sm font-semibold break-all text-gray-200">
@@ -161,9 +161,7 @@ export const Welcome = ({
       <Button variant="primary" size="lg" onClick={handleStartCall} className="mt-6 w-64 font-mono">
         {startButtonText}
       </Button>
-      <footer className="fixed bottom-5 left-0 z-20 flex w-full items-center justify-center">
-
-      </footer>
+      <footer className="fixed bottom-5 left-0 z-20 flex w-full items-center justify-center"></footer>
     </section>
   );
 };

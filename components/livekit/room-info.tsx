@@ -64,59 +64,64 @@ export const RoomInfo = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </button>
-      <div className={cn('p-4 transition-opacity duration-300', isCollapsed && 'opacity-0 pointer-events-none')}>
+      <div
+        className={cn(
+          'p-4 transition-opacity duration-300',
+          isCollapsed && 'pointer-events-none opacity-0'
+        )}
+      >
         <h3 className="mb-3 text-sm font-semibold text-gray-200">Room Info</h3>
 
         <div className="space-y-2 text-xs">
-        {/* Connection Status */}
-        <div className="flex items-center justify-between">
-          <span className="text-gray-400">Status:</span>
-          <div className="flex items-center space-x-2">
-            <div className={cn('h-2 w-2 rounded-full', getConnectionColor())} />
-            <span className="text-gray-300">{getConnectionText()}</span>
-          </div>
-        </div>
-
-        {/* Room Name */}
-        <div className="flex items-start justify-between space-x-2">
-          <span className="whitespace-nowrap text-gray-400">Room:</span>
-          <span className="text-right break-all text-gray-300">{room.name || 'Unknown'}</span>
-        </div>
-
-        {/* activeRecording */}
-        <div className="flex items-start justify-between space-x-2">
-          <span className="whitespace-nowrap text-gray-400">Is Recording:</span>
-          <span className="text-right font-mono text-[10px] break-all text-gray-300">
-            {room.isRecording ? 'Yes' : 'No'}
-          </span>
-        </div>
-
-        {/* Participants Breakdown */}
-        <div className="mt-2 border-t border-gray-700/50 pt-2">
+          {/* Connection Status */}
           <div className="flex items-center justify-between">
-            <span className="text-gray-400">Users:</span>
-            <span className="text-gray-300">{userCount}</span>
+            <span className="text-gray-400">Status:</span>
+            <div className="flex items-center space-x-2">
+              <div className={cn('h-2 w-2 rounded-full', getConnectionColor())} />
+              <span className="text-gray-300">{getConnectionText()}</span>
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">Agents:</span>
-            <span className="text-gray-300">{agentCount}</span>
-          </div>
-          <div className="flex items-center justify-between font-semibold">
-            <span className="text-gray-400">Total:</span>
-            <span className="text-gray-300">{participants.length}</span>
-          </div>
-        </div>
 
-        {/* Session Time */}
-        <div className="mt-2 border-t border-gray-700/50 pt-2">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">Started:</span>
-            <span className="text-gray-300">
-              {room.state === 'connected' ? new Date().toLocaleTimeString() : 'N/A'}
+          {/* Room Name */}
+          <div className="flex items-start justify-between space-x-2">
+            <span className="whitespace-nowrap text-gray-400">Room:</span>
+            <span className="text-right break-all text-gray-300">{room.name || 'Unknown'}</span>
+          </div>
+
+          {/* activeRecording */}
+          <div className="flex items-start justify-between space-x-2">
+            <span className="whitespace-nowrap text-gray-400">Is Recording:</span>
+            <span className="text-right font-mono text-[10px] break-all text-gray-300">
+              {room.isRecording ? 'Yes' : 'No'}
             </span>
           </div>
+
+          {/* Participants Breakdown */}
+          <div className="mt-2 border-t border-gray-700/50 pt-2">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Users:</span>
+              <span className="text-gray-300">{userCount}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Agents:</span>
+              <span className="text-gray-300">{agentCount}</span>
+            </div>
+            <div className="flex items-center justify-between font-semibold">
+              <span className="text-gray-400">Total:</span>
+              <span className="text-gray-300">{participants.length}</span>
+            </div>
+          </div>
+
+          {/* Session Time */}
+          <div className="mt-2 border-t border-gray-700/50 pt-2">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Started:</span>
+              <span className="text-gray-300">
+                {room.state === 'connected' ? new Date().toLocaleTimeString() : 'N/A'}
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

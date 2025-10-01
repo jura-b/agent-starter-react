@@ -29,79 +29,88 @@ export const ParticipantsList = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      <div className={cn('p-4 transition-opacity duration-300', isCollapsed && 'opacity-0 pointer-events-none')}>
+      <div
+        className={cn(
+          'p-4 transition-opacity duration-300',
+          isCollapsed && 'pointer-events-none opacity-0'
+        )}
+      >
         <h3 className="mb-3 text-sm font-semibold text-gray-200">
           Room Participants ({participants.length})
         </h3>
-      <div className="space-y-2">
-        {participants.map((participant) => {
-          const isExpanded = expandedParticipant === participant.sid;
+        <div className="space-y-2">
+          {participants.map((participant) => {
+            const isExpanded = expandedParticipant === participant.sid;
 
-          return (
-            <div
-              key={participant.sid}
-              className="rounded-md border border-gray-700/50 bg-gray-800/50"
-            >
-              <button
-                onClick={() => setExpandedParticipant(isExpanded ? null : participant.sid)}
-                className="w-full p-2 text-left transition-colors hover:bg-gray-700/30"
+            return (
+              <div
+                key={participant.sid}
+                className="rounded-md border border-gray-700/50 bg-gray-800/50"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-sm text-gray-300">
-                    <div
-                      className={cn(
-                        'h-2 w-2 rounded-full',
-                        participant.isSpeaking ? 'animate-[pulse_0.5s_ease-in-out_infinite] bg-green-500' : 'bg-gray-500'
+                <button
+                  onClick={() => setExpandedParticipant(isExpanded ? null : participant.sid)}
+                  className="w-full p-2 text-left transition-colors hover:bg-gray-700/30"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2 text-sm text-gray-300">
+                      <div
+                        className={cn(
+                          'h-2 w-2 rounded-full',
+                          participant.isSpeaking
+                            ? 'animate-[pulse_0.5s_ease-in-out_infinite] bg-green-500'
+                            : 'bg-gray-500'
+                        )}
+                      />
+                      <span>{participant.isAgent ? '🤖' : '🤷🏾‍♂️'} </span>
+                      <ParticipantName participant={participant} />
+                      {participant.isAgent && (
+                        <span className="text-xs text-gray-400">(Agent)</span>
                       )}
-                    />
-                    <span>{participant.isAgent ? '🤖' : '🤷🏾‍♂️'} </span>
-                    <ParticipantName participant={participant} />
-                    {participant.isAgent && <span className="text-xs text-gray-400">(Agent)</span>}
-                    {participant.isLocal && <span className="text-xs text-gray-400">(You)</span>}
+                      {participant.isLocal && <span className="text-xs text-gray-400">(You)</span>}
+                    </div>
+                    <svg
+                      className={cn(
+                        'h-4 w-4 text-gray-400 transition-transform',
+                        isExpanded && 'rotate-180 transform'
+                      )}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
                   </div>
-                  <svg
-                    className={cn(
-                      'h-4 w-4 text-gray-400 transition-transform',
-                      isExpanded && 'rotate-180 transform'
-                    )}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </button>
+                </button>
 
-              {isExpanded && (
-                <div className="space-y-1 border-t border-gray-700/50 p-3 text-xs text-gray-400">
-                  <div>
-                    <span className="font-semibold">Identity:</span> {participant.identity}
+                {isExpanded && (
+                  <div className="space-y-1 border-t border-gray-700/50 p-3 text-xs text-gray-400">
+                    <div>
+                      <span className="font-semibold">Identity:</span> {participant.identity}
+                    </div>
+                    <div>
+                      <span className="font-semibold">SID:</span> {participant.sid}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Status:</span>{' '}
+                      {participant.connectionQuality || 'Unknown'}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Joined:</span>{' '}
+                      {participant.joinedAt
+                        ? new Date(participant.joinedAt).toLocaleTimeString()
+                        : 'Unknown'}
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-semibold">SID:</span> {participant.sid}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Status:</span>{' '}
-                    {participant.connectionQuality || 'Unknown'}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Joined:</span>{' '}
-                    {participant.joinedAt
-                      ? new Date(participant.joinedAt).toLocaleTimeString()
-                      : 'Unknown'}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
