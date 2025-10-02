@@ -35,11 +35,12 @@ export async function POST(req: Request) {
     const customRoomName: string = body?.room_name;
     const fromPhoneNumber: string = body?.from_phone_number || '';
     const destinationPhoneNumber: string = body?.destination_phone_number || '';
+    const userParticipantName: string = body?.participant_name || 'user';
 
     // Generate participant token
     const randomNumber = Math.floor(Math.random() * 10_000);
-    const participantName = `user_${randomNumber}`;
-    const participantIdentity = `voice_assistant_user_${randomNumber}`;
+    const participantName = `${userParticipantName}_${randomNumber}`;
+    const participantIdentity = `${userParticipantName}_${randomNumber}`;
     const roomName = customRoomName;
 
     const participantToken = await createParticipantToken(
@@ -49,6 +50,7 @@ export async function POST(req: Request) {
         attributes: {
           'sip.phoneNumber': fromPhoneNumber,
           'sip.trunkPhoneNumber': destinationPhoneNumber,
+          'zai.role': userParticipantName,
         },
         ttl: '60m',
       },

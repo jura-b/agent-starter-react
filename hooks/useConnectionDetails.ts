@@ -22,6 +22,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
       roomName: string;
       fromPhoneNumber: string;
       destinationPhoneNumber: string;
+      participantName?: string;
     }) => {
       setConnectionDetails(null);
       const url = new URL(
@@ -42,6 +43,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
             room_name: connectionData?.roomName,
             from_phone_number: connectionData?.fromPhoneNumber,
             destination_phone_number: connectionData?.destinationPhoneNumber,
+            participant_name: connectionData?.participantName,
             room_config: appConfig.agentName
               ? {
                   agents: [{ agent_name: appConfig.agentName }],
@@ -82,6 +84,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
       roomName: string;
       fromPhoneNumber: string;
       destinationPhoneNumber: string;
+      participantName?: string;
     }) => {
       if (isConnectionDetailsExpired() || !connectionDetails) {
         return fetchConnectionDetails(connectionData);

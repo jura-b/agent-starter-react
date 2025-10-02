@@ -26,6 +26,7 @@ export function App({ appConfig }: AppProps) {
         roomName: string;
         fromPhoneNumber: string;
         destinationPhoneNumber: string;
+        participantName: string;
       }
     | undefined
   >(undefined);

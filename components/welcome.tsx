@@ -11,6 +11,7 @@ interface WelcomeProps {
     roomName: string;
     fromPhoneNumber: string;
     destinationPhoneNumber: string;
+    participantName: string;
   }) => void;
   appConfig: AppConfig;
 }
@@ -25,6 +26,7 @@ export const Welcome = ({
   const [fromPhoneNumber, setFromPhoneNumber] = useState('+66');
   const [destinationPhoneNumber, setDestinationPhoneNumber] = useState('+66');
   const [suffix, setSuffix] = useState('');
+  const [participantType, setParticipantType] = useState<'user' | 'human_agent'>('user');
 
   // Construct room name for preview
   const getRoomName = () => {
@@ -64,6 +66,7 @@ export const Welcome = ({
       roomName,
       fromPhoneNumber: fromPhoneNumber.trim(),
       destinationPhoneNumber: destinationPhoneNumber.trim(),
+      participantName: participantType,
     });
   };
 
@@ -115,7 +118,7 @@ export const Welcome = ({
             value={fromPhoneNumber}
             onChange={(e) => setFromPhoneNumber(e.target.value)}
             placeholder="Enter from phone number"
-            className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
@@ -129,7 +132,7 @@ export const Welcome = ({
             value={destinationPhoneNumber}
             onChange={(e) => setDestinationPhoneNumber(e.target.value)}
             placeholder="Enter destination phone number"
-            className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
@@ -143,8 +146,38 @@ export const Welcome = ({
             value={suffix}
             onChange={(e) => setSuffix(e.target.value)}
             placeholder="Enter suffix"
-            className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
+        </div>
+
+        <div>
+          <label className="text-fg1 mb-3 block pl-4 text-left text-sm font-medium">
+            Participant Type
+          </label>
+          <div className="space-y-2">
+            <label className="flex cursor-pointer items-center space-x-3 rounded-md px-4 transition-colors hover:bg-gray-800">
+              <input
+                type="radio"
+                name="participantType"
+                value="user"
+                checked={participantType === 'user'}
+                onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
+                className="h-4 w-4"
+              />
+              <span className="text-sm text-gray-200">User</span>
+            </label>
+            <label className="flex cursor-pointer items-center space-x-3 rounded-md px-4 transition-colors hover:bg-gray-800">
+              <input
+                type="radio"
+                name="participantType"
+                value="human_agent"
+                checked={participantType === 'human_agent'}
+                onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
+                className="h-4 w-4"
+              />
+              <span className="text-sm text-gray-200">Human Agent</span>
+            </label>
+          </div>
         </div>
       </div>
 
