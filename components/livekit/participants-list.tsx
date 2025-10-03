@@ -16,6 +16,18 @@ export const ParticipantsList = () => {
       <div className="space-y-2">
         {participants.map((participant) => {
           const isExpanded = expandedParticipant === participant.sid;
+          const roleIcon = () => {
+            if (participant.isAgent) {
+              return '🤖';
+            }
+            const zaiRole = participant.attributes['zai.role'];
+            if (zaiRole === 'user') {
+              return '👨🏽‍🦱';
+            } else if (zaiRole === 'human_agent') {
+              return '👮🏾‍♂️';
+            }
+            return '？';
+          };
 
           return (
             <div
@@ -36,7 +48,7 @@ export const ParticipantsList = () => {
                           : 'bg-gray-500'
                       )}
                     />
-                    <span className="flex-shrink-0">{participant.isAgent ? '🤖' : '🤷🏾‍♂️'}</span>
+                    <span className="flex-shrink-0">{roleIcon()}</span>
                     <span className="max-w-[150px] truncate">{participant.name}</span>
                     {participant.isAgent && (
                       <span className="flex-shrink-0 text-xs text-gray-400">(Agent)</span>
