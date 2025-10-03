@@ -51,8 +51,6 @@ export const SessionView = ({
     await send(message);
   }
 
-  room.numParticipants
-
   useEffect(() => {
     if (sessionStarted) {
       const timeout = setTimeout(() => {
@@ -60,11 +58,7 @@ export const SessionView = ({
         if (room.numParticipants <= 1) {
           toastAlert({
             title: 'Session ended',
-            description: (
-              <p className="w-full">
-                No other participants joined the room.
-              </p>
-            ),
+            description: <p className="w-full">No other participants joined the room.</p>,
           });
           room.disconnect();
         }
