@@ -13,7 +13,6 @@ interface AgentActionPanelProps {
 export function AgentActionPanel({ localParticipant, className }: AgentActionPanelProps) {
   const [selectedAction, setSelectedAction] = useState<'HELLO' | 'HUMAN_AGENT_HANDOFF'>('HELLO');
   const [isLoading, setIsLoading] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   async function sendAction(action: 'HELLO' | 'HUMAN_AGENT_HANDOFF') {
     if (!localParticipant) {
@@ -54,58 +53,32 @@ export function AgentActionPanel({ localParticipant, className }: AgentActionPan
   }
 
   return (
-    <div
-      className={cn(
-        'min-w-[200px] rounded-lg border border-gray-700 bg-gray-900/90 backdrop-blur-sm transition-transform duration-300',
-        isCollapsed ? 'md:translate-x-[calc(100%-2.5rem)]' : 'translate-x-0',
-        className
-      )}
-    >
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute top-2 right-2 z-10 rounded p-1 text-gray-400 transition-colors hover:bg-gray-700/50 hover:text-gray-200 md:right-auto md:left-2"
-      >
-        <svg
-          className={cn('h-4 w-4 transition-transform', isCollapsed && 'md:rotate-180')}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <div
-        className={cn(
-          'p-4 transition-opacity duration-300',
-          isCollapsed && 'pointer-events-none opacity-0'
-        )}
-      >
-        <h3 className="mb-3 text-sm font-semibold text-gray-200">Agent Actions</h3>
-        <form onSubmit={handleActionSubmit} className="space-y-3">
-          <div>
-            <label htmlFor="agent-action" className="mb-1 block text-xs text-gray-400">
-              Select Action
-            </label>
-            <select
-              id="agent-action"
-              value={selectedAction}
-              onChange={(e) => setSelectedAction(e.target.value as 'HELLO' | 'HUMAN_AGENT_HANDOFF')}
-              className="w-full rounded-md border border-gray-700 bg-gray-800/50 px-2 py-1.5 text-xs text-gray-300 transition-colors focus:border-gray-600 focus:ring-1 focus:ring-gray-600 focus:outline-none"
-              disabled={isLoading}
-            >
-              <option value="HELLO">Say Hello</option>
-              <option value="HUMAN_AGENT_HANDOFF">Hanoff to Human Agent</option>
-            </select>
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading || !localParticipant}
-            className="w-full rounded-md bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 focus:ring-1 focus:ring-gray-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+    <div className={cn('p-0', className)}>
+      <h3 className="mb-3 text-sm font-semibold text-gray-200">Agent Actions</h3>
+      <form onSubmit={handleActionSubmit} className="space-y-3">
+        <div>
+          <label htmlFor="agent-action" className="mb-1 block text-xs text-gray-400">
+            Select Action
+          </label>
+          <select
+            id="agent-action"
+            value={selectedAction}
+            onChange={(e) => setSelectedAction(e.target.value as 'HELLO' | 'HUMAN_AGENT_HANDOFF')}
+            className="w-full cursor-pointer rounded-md border border-gray-700 bg-gray-800/50 px-2 py-1.5 text-xs text-gray-300 transition-colors focus:border-gray-600 focus:ring-1 focus:ring-gray-600 focus:outline-none"
+            disabled={isLoading}
           >
-            {isLoading ? 'Sending...' : 'Send Action'}
-          </button>
-        </form>
-      </div>
+            <option value="HELLO">Say Hello</option>
+            <option value="HUMAN_AGENT_HANDOFF">Handoff to Human Agent</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          disabled={isLoading || !localParticipant}
+          className="w-full cursor-pointer rounded-md bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 focus:ring-1 focus:ring-gray-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isLoading ? 'Sending...' : 'Send Action'}
+        </button>
+      </form>
     </div>
   );
 }

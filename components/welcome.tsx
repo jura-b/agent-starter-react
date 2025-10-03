@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ConfigPanel } from '@/components/livekit/config-panel';
+import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
 import { Button } from '@/components/ui/button';
 import type { AppConfig } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -79,7 +79,7 @@ export const Welcome = ({
         disabled ? 'z-10' : 'z-20'
       )}
     >
-      <ConfigPanel appConfig={appConfig} />
+      <ConfigPanelStandalone appConfig={appConfig} />
       <svg
         width="64"
         height="64"

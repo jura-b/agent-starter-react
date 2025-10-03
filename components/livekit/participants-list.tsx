@@ -7,110 +7,86 @@ import { cn } from '@/lib/utils';
 export const ParticipantsList = () => {
   const participants = useParticipants();
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div
-      className={cn(
-        'fixed top-4 left-4 z-100 max-w-sm rounded-lg border border-gray-700 bg-gray-900/90 backdrop-blur-sm transition-transform duration-300',
-        isCollapsed ? '-translate-x-[calc(100%-2.5rem)]' : 'translate-x-0'
-      )}
-    >
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute top-2 right-2 z-10 rounded p-1 text-gray-400 transition-colors hover:bg-gray-700/50 hover:text-gray-200"
-      >
-        <svg
-          className={cn('h-4 w-4 transition-transform', isCollapsed && 'rotate-180')}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <div
-        className={cn(
-          'p-4 transition-opacity duration-300',
-          isCollapsed && 'pointer-events-none opacity-0'
-        )}
-      >
-        <h3 className="mb-3 text-sm font-semibold text-gray-200">
-          Room Participants ({participants.length})
-        </h3>
-        <div className="space-y-2">
-          {participants.map((participant) => {
-            const isExpanded = expandedParticipant === participant.sid;
+    <div className="p-0">
+      <h3 className="mb-3 text-sm font-semibold text-gray-200">
+        Room Participants ({participants.length})
+      </h3>
+      <div className="space-y-2">
+        {participants.map((participant) => {
+          const isExpanded = expandedParticipant === participant.sid;
 
-            return (
-              <div
-                key={participant.sid}
-                className="rounded-md border border-gray-700/50 bg-gray-800/50"
+          return (
+            <div
+              key={participant.sid}
+              className="rounded-md border border-gray-700/50 bg-gray-800/50"
+            >
+              <button
+                onClick={() => setExpandedParticipant(isExpanded ? null : participant.sid)}
+                className="w-full cursor-pointer p-2 text-left transition-colors hover:bg-gray-700/30"
               >
-                <button
-                  onClick={() => setExpandedParticipant(isExpanded ? null : participant.sid)}
-                  className="w-full p-2 text-left transition-colors hover:bg-gray-700/30"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-sm text-gray-300">
-                      <div
-                        className={cn(
-                          'h-2 w-2 rounded-full',
-                          participant.isSpeaking
-                            ? 'animate-[pulse_0.5s_ease-in-out_infinite] bg-green-500'
-                            : 'bg-gray-500'
-                        )}
-                      />
-                      <span>{participant.isAgent ? '🤖' : '🤷🏾‍♂️'} </span>
-                      <ParticipantName participant={participant} />
-                      {participant.isAgent && (
-                        <span className="text-xs text-gray-400">(Agent)</span>
-                      )}
-                      {participant.isLocal && <span className="text-xs text-gray-400">(You)</span>}
-                    </div>
-                    <svg
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-sm text-gray-300">
+                    <div
                       className={cn(
-                        'h-4 w-4 text-gray-400 transition-transform',
-                        isExpanded && 'rotate-180 transform'
+                        'h-2 w-2 flex-shrink-0 rounded-full',
+                        participant.isSpeaking
+                          ? 'animate-[pulse_0.5s_ease-in-out_infinite] bg-green-500'
+                          : 'bg-gray-500'
                       )}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    />
+                    <span className="flex-shrink-0">{participant.isAgent ? '🤖' : '🤷🏾‍♂️'}</span>
+                    <span className="max-w-[150px] truncate">{participant.name}</span>
+                    {participant.isAgent && (
+                      <span className="flex-shrink-0 text-xs text-gray-400">(Agent)</span>
+                    )}
+                    {participant.isLocal && (
+                      <span className="flex-shrink-0 text-xs text-gray-400">(You)</span>
+                    )}
                   </div>
-                </button>
+                  <svg
+                    className={cn(
+                      'h-4 w-4 text-gray-400 transition-transform',
+                      isExpanded && 'rotate-180 transform'
+                    )}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </button>
 
-                {isExpanded && (
-                  <div className="space-y-1 border-t border-gray-700/50 p-3 text-xs text-gray-400">
-                    <div>
-                      <span className="font-semibold">Identity:</span> {participant.identity}
-                    </div>
-                    <div>
-                      <span className="font-semibold">SID:</span> {participant.sid}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Status:</span>{' '}
-                      {participant.connectionQuality || 'Unknown'}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Joined:</span>{' '}
-                      {participant.joinedAt
-                        ? new Date(participant.joinedAt).toLocaleTimeString()
-                        : 'Unknown'}
-                    </div>
+              {isExpanded && (
+                <div className="space-y-1 border-t border-gray-700/50 p-3 text-xs text-gray-400">
+                  <div>
+                    <span className="font-semibold">Identity:</span> {participant.identity}
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  <div>
+                    <span className="font-semibold">SID:</span> {participant.sid}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Status:</span>{' '}
+                    {participant.connectionQuality || 'Unknown'}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Joined:</span>{' '}
+                    {participant.joinedAt
+                      ? new Date(participant.joinedAt).toLocaleTimeString()
+                      : 'Unknown'}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

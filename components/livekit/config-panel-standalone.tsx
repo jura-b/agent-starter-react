@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { AppConfig } from '@/lib/types';
-import { cn } from '@/lib/utils';
 
-interface ConfigPanelProps {
+interface ConfigPanelStandaloneProps {
   appConfig: AppConfig;
 }
 
-export const ConfigPanel = ({ appConfig }: ConfigPanelProps) => {
+export const ConfigPanelStandalone = ({ appConfig }: ConfigPanelStandaloneProps) => {
   return (
-    <div className="p-0">
+    <div className="fixed top-4 right-4 z-10 min-w-[280px] rounded-lg border border-gray-700 bg-gray-900/90 p-4 text-left backdrop-blur-sm">
       <h3 className="mb-3 text-sm font-semibold text-gray-200">Configuration</h3>
 
       <div className="space-y-2 text-xs">
