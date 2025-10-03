@@ -51,29 +51,18 @@ export const SessionView = ({
     await send(message);
   }
 
+  room.numParticipants
+
   useEffect(() => {
     if (sessionStarted) {
       const timeout = setTimeout(() => {
-        if (!isAgentAvailable(agentState)) {
-          const reason =
-            agentState === 'connecting'
-              ? 'Agent did not join the room. '
-              : 'Agent connected but did not complete initializing. ';
-
+        // Get current participants count
+        if (room.numParticipants <= 1) {
           toastAlert({
             title: 'Session ended',
             description: (
               <p className="w-full">
-                {reason}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://docs.livekit.io/agents/start/voice-ai/"
-                  className="whitespace-nowrap underline"
-                >
-                  See quickstart guide
-                </a>
-                .
+                No other participants joined the room.
               </p>
             ),
           });
@@ -83,7 +72,7 @@ export const SessionView = ({
 
       return () => clearTimeout(timeout);
     }
-  }, [agentState, sessionStarted, room]);
+  }, [sessionStarted, room, room.numParticipants]);
 
   const capabilities = {
     supportsChatInput: appConfig.supportsChatInput,
