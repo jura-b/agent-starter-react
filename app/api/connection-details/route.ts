@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
     // Generate participant token
     const randomNumber = Math.floor(Math.random() * 10_000);
-    const participantName = `${userParticipantName}_${randomNumber}`;
+    const participantName = `${userParticipantName}_${randomNumber}`.toUpperCase();
     const participantIdentity = `${userParticipantName}_${randomNumber}`;
     const roomName = customRoomName;
 
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         attributes: {
           'sip.phoneNumber': fromPhoneNumber,
           'sip.trunkPhoneNumber': destinationPhoneNumber,
-          'zai.role': userParticipantName,
+          'zai.role': userParticipantName, // "user" or "human_agent"
         },
         ttl: '60m',
       },

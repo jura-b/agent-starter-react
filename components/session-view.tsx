@@ -5,10 +5,12 @@ import { AnimatePresence, motion } from 'motion/react';
 import {
   type AgentState,
   type ReceivedChatMessage,
+  useLocalParticipant,
   useRoomContext,
   useVoiceAssistant,
 } from '@livekit/components-react';
 import { toastAlert } from '@/components/alert-toast';
+import { AgentActionPanel } from '@/components/livekit/agent-action-panel';
 import { AgentControlBar } from '@/components/livekit/agent-control-bar/agent-control-bar';
 import { ChatEntry } from '@/components/livekit/chat/chat-entry';
 import { ChatMessageView } from '@/components/livekit/chat/chat-message-view';
@@ -41,6 +43,7 @@ export const SessionView = ({
   const [chatOpen, setChatOpen] = useState(false);
   const { messages, send } = useChatAndTranscription();
   const room = useRoomContext();
+  const { localParticipant } = useLocalParticipant();
 
   useDebugMode({
     enabled: process.env.NODE_END !== 'production',
@@ -105,6 +108,11 @@ export const SessionView = ({
       <ParticipantsList />
       <RoomInfo />
       <ConfigPanel appConfig={appConfig} />
+
+      {/* Agent Action Panel - Fixed to right side on desktop, bottom on mobile */}
+      <div className="fixed right-4 bottom-20 left-4 z-100 md:top-80 md:right-4 md:bottom-auto md:left-auto md:w-64">
+        <AgentActionPanel localParticipant={localParticipant} />
+      </div>
 
       <ChatMessageView
         className={cn(
