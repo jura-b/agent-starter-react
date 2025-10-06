@@ -52,8 +52,8 @@ export const RoomInfo = () => {
         <div className="flex items-center justify-between">
           <span className="text-gray-400">Status:</span>
           <div className="flex items-center space-x-2">
-            <div className={cn('h-2 w-2 rounded-full', getConnectionColor())} />
             <span className="text-gray-300">{getConnectionText()}</span>
+            <div className={cn('h-2 w-2 rounded-full', getConnectionColor())} />
           </div>
         </div>
 
@@ -65,10 +65,20 @@ export const RoomInfo = () => {
 
         {/* activeRecording */}
         <div className="flex items-start justify-between space-x-2">
-          <span className="whitespace-nowrap text-gray-400">Is Recording:</span>
-          <span className="text-right font-mono text-[10px] break-all text-gray-300">
-            {room.isRecording ? 'Yes' : 'No'}
-          </span>
+          <span className="items-center whitespace-nowrap text-gray-400">Recording Status:</span>
+          <div className="flex items-center space-x-2 text-right break-all text-gray-300">
+            {room.isRecording ? (
+              <>
+                <div className="flex items-center">Recording</div>
+                <div className="flex h-2 w-2 animate-pulse items-center rounded-full bg-red-500" />
+              </>
+            ) : (
+              <>
+                <div className="flex items-center">Not Recording</div>
+                <div className="flex h-2 w-2 items-center rounded-full bg-gray-500" />
+              </>
+            )}
+          </div>
         </div>
 
         {/* Participants Breakdown */}

@@ -55,7 +55,7 @@ export const SessionView = ({
     if (sessionStarted) {
       const timeout = setTimeout(() => {
         // Get current participants count
-        if (room.numParticipants <= 1) {
+        if (room.numPublishers <= 1) {
           toastAlert({
             title: 'Session ended',
             description: <p className="w-full">No other participants joined the room.</p>,
@@ -66,7 +66,7 @@ export const SessionView = ({
 
       return () => clearTimeout(timeout);
     }
-  }, [sessionStarted, room, room.numParticipants]);
+  }, [sessionStarted, room, room.numPublishers]);
 
   const capabilities = {
     supportsChatInput: appConfig.supportsChatInput,
