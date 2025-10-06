@@ -76,14 +76,14 @@ export const SessionView = ({
 
   return (
     <>
-      {/* Sidebar with all panels - only show when session has started */}
-      {sessionStarted && (
+      {/* Sidebar permanently hidden for text-chat only demo */}
+      {/* {sessionStarted && (
         <Sidebar
           appConfig={appConfig}
           localParticipant={localParticipant}
           onCollapseChange={setSidebarCollapsed}
         />
-      )}
+      )} */}
 
       {/* Main content section */}
       <section
@@ -93,9 +93,8 @@ export const SessionView = ({
           'relative min-h-screen opacity-0 transition-all duration-300',
           // prevent page scrollbar
           // when !chatOpen due to 'translate-y-20'
-          !chatOpen && 'max-h-svh overflow-hidden',
-          // Adjust margin for sidebar
-          sessionStarted && !sidebarCollapsed ? 'ml-80' : 'ml-0'
+          !chatOpen && 'max-h-svh overflow-hidden'
+          // No sidebar margin adjustment needed
         )}
       >
         <ChatMessageView
@@ -126,8 +125,10 @@ export const SessionView = ({
           <div className="from-background absolute bottom-0 left-0 h-12 w-full translate-y-full bg-gradient-to-b to-transparent" />
         </div>
 
-        <MediaTiles chatOpen={chatOpen} />
+        {/* MediaTiles hidden for text-chat only demo */}
+        <MediaTiles chatOpen={true} />
 
+        {/* Modified control bar for text-chat only */}
         <div className="bg-background absolute right-0 bottom-0 left-0 z-50 px-3 pt-2 pb-3 md:px-12 md:pb-12">
           <motion.div
             key="control-bar"
@@ -162,8 +163,13 @@ export const SessionView = ({
                 </motion.div>
               )}
 
+              {/* Pass text-only capabilities to AgentControlBar */}
               <AgentControlBar
-                capabilities={capabilities}
+                capabilities={{
+                  supportsChatInput: true,
+                  supportsVideoInput: false,
+                  supportsScreenShare: false,
+                }}
                 onChatOpenChange={setChatOpen}
                 onSendMessage={handleSendMessage}
               />

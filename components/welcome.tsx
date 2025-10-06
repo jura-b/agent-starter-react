@@ -79,7 +79,8 @@ export const Welcome = ({
         disabled ? 'z-10' : 'z-20'
       )}
     >
-      <ConfigPanelStandalone appConfig={appConfig} />
+      {/* Config panel hidden for text-chat only demo */}
+      {/* <ConfigPanelStandalone appConfig={appConfig} /> */}
       <svg
         width="64"
         height="64"

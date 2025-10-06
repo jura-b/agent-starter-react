@@ -16,7 +16,7 @@ import { UseAgentControlBarProps, useAgentControlBar } from './hooks/use-agent-c
 
 export interface AgentControlBarProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    UseAgentControlBarProps {
+  UseAgentControlBarProps {
   capabilities: Pick<AppConfig, 'supportsChatInput' | 'supportsVideoInput' | 'supportsScreenShare'>;
   onChatOpenChange?: (open: boolean) => void;
   onSendMessage?: (message: string) => Promise<void>;
@@ -39,7 +39,7 @@ export function AgentControlBar({
   ...props
 }: AgentControlBarProps) {
   const participants = useRemoteParticipants();
-  const [chatOpen, setChatOpen] = React.useState(false);
+  const [chatOpen, setChatOpen] = React.useState(true);
   const [isSendingMessage, setIsSendingMessage] = React.useState(false);
 
   const isAgentAvailable = participants.some((p) => p.isAgent);
@@ -60,6 +60,8 @@ export function AgentControlBar({
     controls,
     saveUserChoices,
   });
+
+  visibleControls.microphone = false;
 
   const handleSendMessage = async (message: string) => {
     setIsSendingMessage(true);
