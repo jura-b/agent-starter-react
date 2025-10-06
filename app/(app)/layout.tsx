@@ -19,17 +19,15 @@ export default async function AppLayout({ children }: AppLayoutProps) {
           className="scale-100 transition-transform duration-300 hover:scale-150"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logo} alt={`${companyName} Logo`} className="block size-12 dark:hidden" />
+          {/* <img src={logo} alt={`${companyName} Logo`} className="block size-12 dark:hidden" /> */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          {/* <img
             src={logoDark ?? logo}
             alt={`${companyName} Logo`}
             className="hidden size-12 dark:block"
-          />
+          /> */}
         </a>
-        <span className="text-foreground font-mono text-xs font-bold tracking-wider uppercase">
-          Built by AI
-        </span>
+        <span className="text-foreground font-mono text-xs font-bold tracking-wider uppercase"></span>
       </header>
       {children}
     </>

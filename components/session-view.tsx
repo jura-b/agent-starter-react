@@ -165,11 +165,7 @@ export const SessionView = ({
 
               {/* Pass text-only capabilities to AgentControlBar */}
               <AgentControlBar
-                capabilities={{
-                  supportsChatInput: true,
-                  supportsVideoInput: false,
-                  supportsScreenShare: false,
-                }}
+                capabilities={capabilities}
                 onChatOpenChange={setChatOpen}
                 onSendMessage={handleSendMessage}
               />

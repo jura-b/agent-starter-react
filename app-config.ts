@@ -1,21 +1,20 @@
 import type { AppConfig } from './lib/types';
 
 export const APP_CONFIG_DEFAULTS: AppConfig = {
-  companyName: '100,000,000X',
-  pageTitle: '100,000,000X Agent',
-  pageDescription: '100,000,000X Voice Agent',
+  companyName: 'Chat Support Agent Demo',
+  pageTitle: 'Chat Support Agent Demo',
+  pageDescription: 'Chat Support Agent Demo',
 
   supportsChatInput: true,
-  supportsVideoInput: true,
-  supportsScreenShare: true,
+  supportsVideoInput: false,
+  supportsScreenShare: false,
   isPreConnectBufferEnabled: true,
 
-  logo: 'https://venngage-wordpress.s3.amazonaws.com/uploads/2022/09/meme_surprised_shocked_pikachu.png',
-  accent: '#002cf2',
-  logoDark:
-    'https://venngage-wordpress.s3.amazonaws.com/uploads/2022/09/meme_surprised_shocked_pikachu.png',
-  accentDark: '#1fd5f9',
-  startButtonText: 'Simulate SIP-like Call',
+  logo: 'https://cdn-icons-png.flaticon.com/512/1028/1028931.png',
+  accent: '#c616ff',
+  logoDark: 'https://cdn-icons-png.flaticon.com/512/1028/1028931.png',
+  accentDark: '#c616ff',
+  startButtonText: 'Get Support',
 
   agentName: process.env.AGENT_NAME,
   livekitUrl: process.env.LIVEKIT_URL,
