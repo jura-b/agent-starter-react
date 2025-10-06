@@ -24,7 +24,7 @@ export const Welcome = ({
   ref,
 }: React.ComponentProps<'div'> & WelcomeProps) => {
   const [fromPhoneNumber, setFromPhoneNumber] = useState('Eddie');
-  const [destinationPhoneNumber, setDestinationPhoneNumber] = useState('+9999');
+  const [destinationPhoneNumber, setDestinationPhoneNumber] = useState('+669999');
   const [suffix, setSuffix] = useState('');
   const [participantType, setParticipantType] = useState<'user' | 'human_agent'>('user');
 
@@ -85,7 +85,7 @@ export const Welcome = ({
       <img
         src="https://cdn.dribbble.com/userupload/42409823/file/original-568544560f6ca1076a16e3428302e329.gif"
         alt="Live AI"
-        className="h-40 w-auto"
+        className="h-120 w-auto"
       />
       <p className="text-fg1 max-w-prose pt-1 leading-6 font-medium">
         Live AI - Chat Support Agent
@@ -124,7 +124,7 @@ export const Welcome = ({
           <input
             disabled
             type="text"
-            value="+9999"
+            value="+669999"
             onChange={(e) => setDestinationPhoneNumber(e.target.value)}
             placeholder="Enter destination phone number"
             className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
