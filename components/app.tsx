@@ -23,11 +23,11 @@ export function App({ appConfig }: AppProps) {
   const [sessionStarted, setSessionStarted] = useState(false);
   const [connectionData, setConnectionData] = useState<
     | {
-      roomName: string;
-      fromPhoneNumber: string;
-      destinationPhoneNumber: string;
-      participantName: string;
-    }
+        roomName: string;
+        fromPhoneNumber: string;
+        destinationPhoneNumber: string;
+        participantName: string;
+      }
     | undefined
   >(undefined);
   const { refreshConnectionDetails } = useConnectionDetails(appConfig);
