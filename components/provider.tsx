@@ -20,9 +20,9 @@ export function Provider({
   React.useEffect(() => {
     if (room.state === 'disconnected' && connectionDetails) {
       Promise.all([
-        room.localParticipant.setMicrophoneEnabled(true, undefined, {
-          preConnectBuffer: true,
-        }),
+        // room.localParticipant.setMicrophoneEnabled(true, undefined, {
+        //   preConnectBuffer: true,
+        // }),
         room.connect(connectionDetails.serverUrl, connectionDetails.participantToken),
       ]).catch((error) => {
         toastAlert({

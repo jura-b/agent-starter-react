@@ -23,11 +23,11 @@ export function App({ appConfig }: AppProps) {
   const [sessionStarted, setSessionStarted] = useState(false);
   const [connectionData, setConnectionData] = useState<
     | {
-        roomName: string;
-        fromPhoneNumber: string;
-        destinationPhoneNumber: string;
-        participantName: string;
-      }
+      roomName: string;
+      fromPhoneNumber: string;
+      destinationPhoneNumber: string;
+      participantName: string;
+    }
     | undefined
   >(undefined);
   const { refreshConnectionDetails } = useConnectionDetails(appConfig);
@@ -55,9 +55,9 @@ export function App({ appConfig }: AppProps) {
     let aborted = false;
     if (sessionStarted && room.state === 'disconnected') {
       Promise.all([
-        room.localParticipant.setMicrophoneEnabled(true, undefined, {
-          preConnectBuffer: appConfig.isPreConnectBufferEnabled,
-        }),
+        // room.localParticipant.setMicrophoneEnabled(true, undefined, {
+        //   preConnectBuffer: appConfig.isPreConnectBufferEnabled,
+        // }),
         refreshConnectionDetails(connectionData).then((connectionDetails) =>
           room.connect(connectionDetails.serverUrl, connectionDetails.participantToken)
         ),
