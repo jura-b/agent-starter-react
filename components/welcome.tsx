@@ -91,8 +91,8 @@ export const Welcome = ({
         Live AI - Chat Support Agent
       </p>
 
-      <div className="mt-6 hidden w-64 space-y-3">
-        <div>
+      <div className="mt-6 w-64 space-y-3">
+        <div className="hidden">
           <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">Prefix</label>
           <input
             type="text"
@@ -102,7 +102,7 @@ export const Welcome = ({
           />
         </div>
 
-        <div>
+        <div className="hidden">
           <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
             From Phone Number <span className="text-red-500">*</span>
           </label>
@@ -117,7 +117,7 @@ export const Welcome = ({
           />
         </div>
 
-        <div>
+        <div className="hidden">
           <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
             Destination Phone Number <span className="text-red-500">*</span>
           </label>
@@ -132,21 +132,28 @@ export const Welcome = ({
           />
         </div>
 
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-            Suffix <span className="text-gray-500">(optional)</span>
-          </label>
-          <input
-            disabled
-            type="text"
+        <div className="">
+          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">Room</label>
+          <select
             value={suffix}
             onChange={(e) => setSuffix(e.target.value)}
-            placeholder="Enter suffix"
             className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
+          >
+            <option defaultChecked value="R1">
+              Room #1
+            </option>
+            <option value="R2">Room #2</option>
+            <option value="R3">Room #3</option>
+            <option value="R4">Room #4</option>
+            <option value="R5">Room #5</option>
+            <option value="R6">Room #6</option>
+            <option value="R7">Room #7</option>
+            <option value="R8">Room #8</option>
+            <option value="R9">Room #9</option>
+          </select>
         </div>
 
-        <div>
+        <div className="hidden">
           <label className="text-fg1 mb-3 block pl-4 text-left text-sm font-medium">
             Participant Type
           </label>
