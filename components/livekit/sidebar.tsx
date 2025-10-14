@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { AgentActionPanel } from './agent-action-panel';
 import { ConfigPanel } from './config-panel';
 import { ParticipantsList } from './participants-list';
+import { PhoneNumpad } from './phone-numpad';
 import { RoomInfo } from './room-info';
 
 interface SidebarProps {
@@ -75,11 +76,16 @@ export function Sidebar({
             {/* Room Info Panel */}
             <RoomInfo />
             <hr className="border-gray-700" />
-            {/* Configuration Panel */}
-            <ConfigPanel appConfig={appConfig} />
-            <hr className="border-gray-700" />
             {/* Agent Actions Panel */}
             <AgentActionPanel localParticipant={localParticipant} />
+            <hr className="border-gray-700" />
+            {/* Phone Numpad Panel */}
+            <PhoneNumpad localParticipant={localParticipant} />
+            <hr className="border-gray-700" />
+            {/* Configuration Panel */}
+            <ConfigPanel appConfig={appConfig} />
+            <br />
+            <br />
           </div>
         </div>
       </div>
