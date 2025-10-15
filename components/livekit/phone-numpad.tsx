@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { LocalParticipant } from 'livekit-client';
 import { cn } from '@/lib/utils';
 
@@ -38,14 +38,88 @@ const numpadLayout: NumpadButton[][] = [
   ],
 ];
 
+// DTMF frequency pairs (low frequency, high frequency) for each button
+const DTMF_FREQUENCIES: Record<string, [number, number]> = {
+  '1': [697, 1209],
+  '2': [697, 1336],
+  '3': [697, 1477],
+  '4': [770, 1209],
+  '5': [770, 1336],
+  '6': [770, 1477],
+  '7': [852, 1209],
+  '8': [852, 1336],
+  '9': [852, 1477],
+  '0': [941, 1336],
+  '*': [941, 1209],
+  '#': [941, 1477],
+};
+
 export function PhoneNumpad({ localParticipant, className }: PhoneNumpadProps) {
   const [sending, setSending] = useState(false);
   const [lastPressed, setLastPressed] = useState<string | null>(null);
   const [displayNumber, setDisplayNumber] = useState<string>('');
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    // Initialize AudioContext on component mount
+    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+    return () => {
+      // Clean up AudioContext on unmount
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  const playDtmfTone = (digit: string, duration: number = 500) => {
+    if (!audioContextRef.current) return;
+
+    const frequencies = DTMF_FREQUENCIES[digit];
+    if (!frequencies) return;
+
+    const context = audioContextRef.current;
+    const [lowFreq, highFreq] = frequencies;
+
+    // Create oscillators for both frequencies
+    const oscillator1 = context.createOscillator();
+    const oscillator2 = context.createOscillator();
+
+    // Create gain node for volume control
+    const gainNode = context.createGain();
+
+    // Set frequencies
+    oscillator1.frequency.setValueAtTime(lowFreq, context.currentTime);
+    oscillator2.frequency.setValueAtTime(highFreq, context.currentTime);
+
+    // Connect oscillators to gain node and then to output
+    oscillator1.connect(gainNode);
+    oscillator2.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    // Set volume
+    gainNode.gain.setValueAtTime(0.3, context.currentTime);
+
+    // Fade out to prevent clicking
+    gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + duration / 1000);
+
+    // Start and stop oscillators
+    oscillator1.start(context.currentTime);
+    oscillator2.start(context.currentTime);
+    oscillator1.stop(context.currentTime + duration / 1000);
+    oscillator2.stop(context.currentTime + duration / 1000);
+  };
 
   const handleDtmfPress = async (button: NumpadButton) => {
+    // Play tone immediately for feedback
+    playDtmfTone(button.digit);
+
     if (!localParticipant) {
       console.warn('Cannot send DTMF: localParticipant is not available');
+      // Still update UI even if not connected
+      setLastPressed(button.digit);
+      setDisplayNumber((prev) => prev + button.digit);
+      setTimeout(() => setLastPressed(null), 250);
       return;
     }
 
