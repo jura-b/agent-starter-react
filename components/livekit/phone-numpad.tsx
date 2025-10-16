@@ -62,7 +62,7 @@ export function PhoneNumpad({ localParticipant, className }: PhoneNumpadProps) {
 
   useEffect(() => {
     // Initialize AudioContext on component mount
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContextRef.current = new window.AudioContext();
 
     return () => {
       // Clean up AudioContext on unmount
