@@ -51,6 +51,7 @@ export async function POST(req: Request) {
           'sip.phoneNumber': fromPhoneNumber,
           'sip.trunkPhoneNumber': destinationPhoneNumber,
           'zai.role': userParticipantName, // "user" or "human_agent"
+          'zai.channel_type': 'text'
         },
         ttl: '60m',
       },
