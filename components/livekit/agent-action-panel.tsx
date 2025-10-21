@@ -69,6 +69,8 @@ export function AgentActionPanel({ localParticipant, className }: AgentActionPan
           >
             <option value="HELLO">Say Hello</option>
             <option value="HUMAN_AGENT_HANDOFF">Handoff to Human Agent</option>
+            <option value="SESSION_HOLD">Session Hold</option>
+            <option value="SESSION_RESUME">Session Resume</option>
           </select>
         </div>
         <button
