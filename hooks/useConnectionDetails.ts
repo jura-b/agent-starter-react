@@ -48,8 +48,8 @@ export default function useConnectionDetails(appConfig: AppConfig) {
             participant_type: connectionData?.participantType,
             room_config: appConfig.agentName
               ? {
-                agents: [{ agent_name: appConfig.agentName }],
-              }
+                  agents: [{ agent_name: appConfig.agentName }],
+                }
               : undefined,
           }),
         });

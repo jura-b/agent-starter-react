@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { AccessToken, type AccessTokenOptions, type VideoGrant } from 'livekit-server-sdk';
+import { names, uniqueNamesGenerator } from 'unique-names-generator';
 import { RoomConfiguration } from '@livekit/protocol';
-import { uniqueNamesGenerator, names } from 'unique-names-generator';
 
 // NOTE: you are expected to define the following environment variables in `.env.local`:
 const API_KEY = process.env.LIVEKIT_API_KEY;
@@ -38,12 +38,14 @@ export async function POST(req: Request) {
     const fromPhoneNumber: string = body?.from_phone_number || '';
     const participantType: 'user' | 'human_agent' = body?.participant_type;
     const destinationPhoneNumber: string = body?.destination_phone_number || '';
-    const userParticipantName: string = body?.participant_name || uniqueNamesGenerator({
-      dictionaries: [names, names],
-      separator: ' ',
-      style: 'capital',
-      length: 2,
-    });
+    const userParticipantName: string =
+      body?.participant_name ||
+      uniqueNamesGenerator({
+        dictionaries: [names, names],
+        separator: ' ',
+        style: 'capital',
+        length: 2,
+      });
 
     // Generate participant token
     const randomNumber = Math.floor(Math.random() * 10_000);
