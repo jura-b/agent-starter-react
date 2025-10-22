@@ -12,6 +12,7 @@ interface WelcomeProps {
     fromPhoneNumber: string;
     destinationPhoneNumber: string;
     participantName: string;
+    participantType: 'user' | 'human_agent';
   }) => void;
   appConfig: AppConfig;
 }
@@ -66,7 +67,8 @@ export const Welcome = ({
       roomName,
       fromPhoneNumber: fromPhoneNumber.trim(),
       destinationPhoneNumber: destinationPhoneNumber.trim(),
-      participantName: participantType,
+      participantName: '',
+      participantType,
     });
   };
 

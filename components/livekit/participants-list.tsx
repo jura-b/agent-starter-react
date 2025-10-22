@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ParticipantName, useParticipants } from '@livekit/components-react';
+import { useParticipants } from '@livekit/components-react';
 import { cn } from '@/lib/utils';
 
 export const ParticipantsList = () => {
@@ -26,7 +26,7 @@ export const ParticipantsList = () => {
             } else if (zaiRole === 'human_agent') {
               return '👮🏾‍♂️';
             }
-            return '？';
+            return '⁇';
           };
 
           return (

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { AccessToken, type AccessTokenOptions, type VideoGrant } from 'livekit-server-sdk';
 import { RoomConfiguration } from '@livekit/protocol';
+import { uniqueNamesGenerator, names } from 'unique-names-generator';
 
 // NOTE: you are expected to define the following environment variables in `.env.local`:
 const API_KEY = process.env.LIVEKIT_API_KEY;
@@ -15,6 +16,7 @@ export type ConnectionDetails = {
   roomName: string;
   participantName: string;
   participantToken: string;
+  participantType: 'user' | 'human_agent';
 };
 
 export async function POST(req: Request) {
@@ -34,13 +36,19 @@ export async function POST(req: Request) {
     const agentName: string = body?.room_config?.agents?.[0]?.agent_name;
     const customRoomName: string = body?.room_name;
     const fromPhoneNumber: string = body?.from_phone_number || '';
+    const participantType: 'user' | 'human_agent' = body?.participant_type;
     const destinationPhoneNumber: string = body?.destination_phone_number || '';
-    const userParticipantName: string = body?.participant_name || 'user';
+    const userParticipantName: string = body?.participant_name || uniqueNamesGenerator({
+      dictionaries: [names, names],
+      separator: ' ',
+      style: 'capital',
+      length: 2,
+    });
 
     // Generate participant token
     const randomNumber = Math.floor(Math.random() * 10_000);
-    const participantName = `${userParticipantName}_${randomNumber}`.toUpperCase();
-    const participantIdentity = `${userParticipantName}_${randomNumber}`;
+    const participantName = `${userParticipantName}`;
+    const participantIdentity = `${userParticipantName.toLowerCase().replaceAll(' ', '_')}_${randomNumber}`;
     const roomName = customRoomName;
 
     const participantToken = await createParticipantToken(
@@ -50,7 +58,7 @@ export async function POST(req: Request) {
         attributes: {
           'sip.phoneNumber': fromPhoneNumber,
           'sip.trunkPhoneNumber': destinationPhoneNumber,
-          'zai.role': userParticipantName, // "user" or "human_agent"
+          'zai.role': participantType, // "user" or "human_agent"
         },
         ttl: '60m',
       },
@@ -64,6 +72,7 @@ export async function POST(req: Request) {
       roomName,
       participantToken: participantToken,
       participantName,
+      participantType,
     };
     const headers = new Headers({
       'Cache-Control': 'no-store',

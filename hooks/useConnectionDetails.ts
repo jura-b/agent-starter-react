@@ -23,6 +23,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
       fromPhoneNumber: string;
       destinationPhoneNumber: string;
       participantName?: string;
+      participantType?: 'user' | 'human_agent';
     }) => {
       setConnectionDetails(null);
       const url = new URL(
@@ -44,10 +45,11 @@ export default function useConnectionDetails(appConfig: AppConfig) {
             from_phone_number: connectionData?.fromPhoneNumber,
             destination_phone_number: connectionData?.destinationPhoneNumber,
             participant_name: connectionData?.participantName,
+            participant_type: connectionData?.participantType,
             room_config: appConfig.agentName
               ? {
-                  agents: [{ agent_name: appConfig.agentName }],
-                }
+                agents: [{ agent_name: appConfig.agentName }],
+              }
               : undefined,
           }),
         });
