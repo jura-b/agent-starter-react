@@ -32,7 +32,7 @@ export const ParticipantsList = () => {
           return (
             <div
               key={participant.sid}
-              className="rounded-md border border-gray-700/50 bg-gray-800/50"
+              className={`rounded-md border border-gray-700/50 ${participant.isLocal ? 'bg-green-800/50' : 'bg-gray-800/50'}`}
             >
               <button
                 onClick={() => setExpandedParticipant(isExpanded ? null : participant.sid)}

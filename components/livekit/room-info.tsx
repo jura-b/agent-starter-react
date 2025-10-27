@@ -96,16 +96,6 @@ export const RoomInfo = () => {
             <span className="text-gray-300">{participants.length}</span>
           </div>
         </div>
-
-        {/* Session Time */}
-        <div className="mt-2 border-t border-gray-700/50 pt-2">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">Started:</span>
-            <span className="text-gray-300">
-              {room.state === 'connected' ? formatDateTime(new Date()) : 'N/A'}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );
