@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { MessageFormatter, ReceivedChatMessage } from '@livekit/components-react';
-import { cn } from '@/lib/utils';
+import { cn, formatDateTime } from '@/lib/utils';
 import { useChatMessage } from './hooks/utils';
 
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
@@ -30,7 +30,7 @@ export const ChatEntry = ({
   return (
     <li
       data-lk-message-origin={messageOrigin}
-      title={time.toLocaleTimeString(locale, { timeStyle: 'full' })}
+      title={formatDateTime(time)}
       className={cn('group flex flex-col gap-0.5', className)}
       {...props}
     >
@@ -41,7 +41,7 @@ export const ChatEntry = ({
           {!hideTimestamp && (
             <span className="align-self-end ml-auto font-mono text-xs opacity-0 transition-opacity ease-linear group-hover:opacity-100">
               {hasBeenEdited && '*'}
-              {time.toLocaleTimeString(locale, { timeStyle: 'short' })}
+              {formatDateTime(time)}
             </span>
           )}
         </span>

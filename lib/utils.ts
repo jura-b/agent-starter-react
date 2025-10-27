@@ -16,6 +16,47 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function formatDateTime(date: Date | string | number): string {
+  const dateObj = new Date(date);
+
+  // Get timezone offset in minutes and convert to hours
+  const offsetMinutes = dateObj.getTimezoneOffset();
+  const offsetHours = Math.abs(Math.floor(offsetMinutes / 60));
+  const offsetMins = Math.abs(offsetMinutes % 60);
+  const offsetSign = offsetMinutes <= 0 ? '+' : '-';
+
+  // Format timezone as UTC+X or UTC-X
+  const timezoneStr = `UTC${offsetSign}${offsetHours}${offsetMins > 0 ? ':' + offsetMins.toString().padStart(2, '0') : ''}`;
+
+  // Format the date and time
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const dayName = days[dateObj.getDay()];
+  const day = dateObj.getDate().toString().padStart(2, '0');
+  const monthName = months[dateObj.getMonth()];
+  const year = dateObj.getFullYear();
+
+  const hours = dateObj.getHours().toString().padStart(2, '0');
+  const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+  const seconds = dateObj.getSeconds().toString().padStart(2, '0');
+
+  return `${dayName}, ${year} ${monthName} ${day} ${hours}:${minutes}:${seconds} ${timezoneStr}`;
+}
+
 export function transcriptionToChatMessage(
   textStream: TextStreamData,
   room: Room

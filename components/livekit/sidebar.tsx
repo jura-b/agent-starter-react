@@ -9,6 +9,7 @@ import { ConfigPanel } from './config-panel';
 import { ParticipantsList } from './participants-list';
 import { PhoneNumpad } from './phone-numpad';
 import { RoomInfo } from './room-info';
+import { RoomStartTime } from './room-start-time';
 
 interface SidebarProps {
   appConfig: AppConfig;
@@ -67,6 +68,10 @@ export function Sidebar({
           <div className="border-b border-gray-700 p-4">
             <h2 className="text-lg font-semibold text-gray-100">Control Panel</h2>
           </div>
+
+          {/* Room Start Time */}
+          <RoomStartTime />
+          <hr className="border-gray-700" />
 
           {/* Panels Container */}
           <div className="space-y-6 p-4">

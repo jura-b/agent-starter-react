@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { ConnectionState } from 'livekit-client';
 import { useConnectionState, useParticipants, useRoomContext } from '@livekit/components-react';
-import { cn } from '@/lib/utils';
+import { cn, formatDateTime } from '@/lib/utils';
 
 export const RoomInfo = () => {
   const room = useRoomContext();
@@ -102,7 +102,7 @@ export const RoomInfo = () => {
           <div className="flex items-center justify-between">
             <span className="text-gray-400">Started:</span>
             <span className="text-gray-300">
-              {room.state === 'connected' ? new Date().toLocaleTimeString() : 'N/A'}
+              {room.state === 'connected' ? formatDateTime(new Date()) : 'N/A'}
             </span>
           </div>
         </div>
