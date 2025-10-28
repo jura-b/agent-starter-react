@@ -105,8 +105,8 @@ export const ParticipantsList = () => {
                     <span className="font-semibold">Joined:</span>{' '}
                     {participant.joinedAt
                       ? new Date(participant.joinedAt).toLocaleString(undefined, {
-                        timeStyle: 'short',
-                      })
+                          timeStyle: 'short',
+                        })
                       : 'Unknown'}
                   </div>
                 </div>
