@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { ShareNetworkIcon } from '@phosphor-icons/react';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
 import { Button } from '@/components/ui/button';
 import type { AppConfig } from '@/lib/types';
@@ -24,10 +27,56 @@ export const Welcome = ({
   appConfig,
   ref,
 }: React.ComponentProps<'div'> & WelcomeProps) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [fromPhoneNumber, setFromPhoneNumber] = useState('+66');
   const [destinationPhoneNumber, setDestinationPhoneNumber] = useState('+66');
   const [suffix, setSuffix] = useState('');
   const [participantType, setParticipantType] = useState<'user' | 'human_agent'>('user');
+
+  // Load form values from URL parameters on component mount
+  useEffect(() => {
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
+    const suffixParam = searchParams.get('suffix');
+    const type = searchParams.get('type');
+
+    if (from) setFromPhoneNumber(from);
+    if (to) setDestinationPhoneNumber(to);
+    if (suffixParam) setSuffix(suffixParam);
+    if (type === 'human_agent') setParticipantType('human_agent');
+  }, [searchParams]);
+
+  // Generate shareable URL with current form values
+  const generateShareableUrl = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('from', fromPhoneNumber.trim());
+    params.set('to', destinationPhoneNumber.trim());
+    if (suffix.trim()) {
+      params.set('suffix', suffix.trim());
+    } else {
+      params.delete('suffix');
+    }
+    params.set('type', participantType);
+
+    return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  };
+
+  // Handle copying URL to clipboard
+  const handleCopyUrl = async () => {
+    const url = generateShareableUrl();
+
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard!', {
+        description: 'Share this URL to let others join with the same settings',
+      });
+    } catch (error) {
+      console.error('Failed to copy URL:', error);
+      toast.error('Failed to copy link');
+    }
+  };
 
   // Construct room name for preview
   const getRoomName = () => {
@@ -62,6 +111,10 @@ export const Welcome = ({
       alert('Destination phone number is required. Please enter a complete phone number.');
       return;
     }
+
+    // Update URL with form parameters
+    const newUrl = generateShareableUrl();
+    router.push(newUrl, { scroll: false });
 
     onStartCall({
       roomName,
@@ -184,13 +237,29 @@ export const Welcome = ({
       </div>
 
       {(fromPhoneNumber || destinationPhoneNumber) && (
-        <div className="mt-12 w-64 rounded-full border border-gray-600 p-3 text-white">
-          <p className="text-sm text-gray-400">LiveKit Room Name</p>
-          <hr className="my-2 border-gray-600" />
-          <p className="mt-1 font-mono text-sm font-semibold break-all text-gray-200">
-            {getRoomName()}
-          </p>
-        </div>
+        <button
+          onClick={handleCopyUrl}
+          className="mt-12 w-96 cursor-pointer rounded-full border border-gray-600 bg-gray-800/50 p-3 text-white transition-colors hover:bg-gray-700/50 focus:ring focus:ring-blue-800/50 focus:outline-none"
+          title="Share URL"
+        >
+          <div className="flex flex-col items-center justify-between">
+            <div className="flex flex-row items-center justify-between space-x-2 text-gray-400">
+              <div className="flex font-medium">Share URL</div>
+              <div className="flex">
+                <ShareNetworkIcon size={16} weight="regular" />
+              </div>
+            </div>
+            <div className="flex w-full">
+              <hr className="my-2 w-full border border-gray-800" />
+            </div>
+
+            <div className="flex">
+              <p className="mt-1 font-mono text-sm font-semibold break-all text-gray-200">
+                {getRoomName()}
+              </p>
+            </div>
+          </div>
+        </button>
       )}
 
       <Button variant="primary" size="lg" onClick={handleStartCall} className="mt-6 w-64 font-mono">
