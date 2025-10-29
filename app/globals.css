@@ -247,3 +247,31 @@
     }
   }
 }
+
+@theme {
+  --animate-roll: roll 1s ease-in-out infinite;
+
+  @keyframes roll {
+    0%,
+    100% {
+      transform: rotate(-180deg);
+    }
+
+    50% {
+      transform: rotate(180deg);
+    }
+  }
+
+  --animate-roll2: roll2 1s ease-in-out infinite;
+
+  @keyframes roll2 {
+    0%,
+    100% {
+      transform: rotate(90deg);
+    }
+
+    50% {
+      transform: rotate(-90deg);
+    }
+  }
+}

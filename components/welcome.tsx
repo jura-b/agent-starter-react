@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { KeyReturnIcon, ShareNetworkIcon } from '@phosphor-icons/react';
+import { DiceFiveIcon, DiceTwoIcon, KeyReturnIcon, ShareNetworkIcon } from '@phosphor-icons/react';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
 import { Button } from '@/components/ui/button';
 import type { AppConfig } from '@/lib/types';
@@ -80,6 +80,49 @@ export const Welcome = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleStartCall();
+  };
+
+  // Generate random suffix
+  const generateRandomSuffix = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
+  // Handle random suffix and start
+  const handleRandomSuffixAndStart = () => {
+    const randomSuffix = generateRandomSuffix();
+    setSuffix(randomSuffix);
+
+    // Validate required fields first
+    const roomName = getRoomName() + '_' + randomSuffix;
+
+    if (!roomName || roomName === 'web') {
+      alert('Room name is required. Please enter phone numbers.');
+      return;
+    }
+
+    if (!fromPhoneNumber.trim() || fromPhoneNumber.trim() === '+66') {
+      alert('From phone number is required. Please enter a complete phone number.');
+      return;
+    }
+
+    if (!destinationPhoneNumber.trim() || destinationPhoneNumber.trim() === '+66') {
+      alert('Destination phone number is required. Please enter a complete phone number.');
+      return;
+    }
+
+    // Start call with random suffix
+    onStartCall({
+      roomName,
+      fromPhoneNumber: fromPhoneNumber.trim(),
+      destinationPhoneNumber: destinationPhoneNumber.trim(),
+      participantName: '',
+      participantType,
+    });
   };
 
   // Update URL when form values change (but not on initial mount)
@@ -261,9 +304,20 @@ export const Welcome = ({
           type="submit"
           variant="primary"
           size="lg"
-          className="mt-6 w-64 transform-gpu font-mono transition-transform hover:scale-110"
+          className="mt-6 w-72 transform-gpu font-mono transition-transform hover:scale-110"
         >
           {startButtonText} <KeyReturnIcon size={16} weight="fill" />
+        </Button>
+
+        <Button
+          variant="secondary"
+          size="lg"
+          onClick={handleRandomSuffixAndStart}
+          className="mt-3 flex w-72 transform-gpu flex-row items-center justify-center font-mono text-xs text-gray-300 transition-transform hover:scale-110 hover:bg-gray-800 hover:text-white"
+        >
+          <DiceFiveIcon size={16} weight="fill" className="animate-roll2 flex" />
+          <span className="flex">Random Suffix and Start</span>
+          <DiceTwoIcon size={16} weight="fill" className="animate-roll flex" />
         </Button>
       </form>
 
