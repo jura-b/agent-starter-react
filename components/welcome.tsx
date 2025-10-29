@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { ShareNetworkIcon } from '@phosphor-icons/react';
+import { KeyReturnIcon, ShareNetworkIcon } from '@phosphor-icons/react';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
 import { Button } from '@/components/ui/button';
 import type { AppConfig } from '@/lib/types';
@@ -84,6 +84,31 @@ export const Welcome = ({
     handleStartCall();
   };
 
+  // Update URL when form values change (but not on initial mount)
+  useEffect(() => {
+    // Skip on initial mount to avoid overriding URL parameters
+    const hasUserInteracted =
+      fromPhoneNumber !== '+66' ||
+      destinationPhoneNumber !== '+66' ||
+      suffix !== '' ||
+      participantType !== 'user';
+
+    if (hasUserInteracted) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('from', fromPhoneNumber.trim());
+      params.set('to', destinationPhoneNumber.trim());
+      if (suffix.trim()) {
+        params.set('suffix', suffix.trim());
+      } else {
+        params.delete('suffix');
+      }
+      params.set('type', participantType);
+
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      router.push(newUrl, { scroll: false });
+    }
+  }, [fromPhoneNumber, destinationPhoneNumber, suffix, participantType, searchParams, router]);
+
   // Construct room name for preview
   const getRoomName = () => {
     const roomParts = ['web'];
@@ -117,10 +142,6 @@ export const Welcome = ({
       alert('Destination phone number is required. Please enter a complete phone number.');
       return;
     }
-
-    // Update URL with form parameters
-    const newUrl = generateShareableUrl();
-    router.push(newUrl, { scroll: false });
 
     onStartCall({
       roomName,
@@ -247,7 +268,7 @@ export const Welcome = ({
           size="lg"
           className="mt-6 w-64 transform-gpu font-mono transition-transform hover:scale-110"
         >
-          {startButtonText}
+          {startButtonText} <KeyReturnIcon size={16} weight="fill" />
         </Button>
       </form>
 
