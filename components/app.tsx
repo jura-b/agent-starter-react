@@ -115,6 +115,7 @@ export function App({ appConfig }: AppProps) {
         <MotionSessionView
           key="session-view"
           appConfig={appConfig}
+          connectionData={connectionData}
           disabled={!sessionStarted}
           sessionStarted={sessionStarted}
           initial={{ opacity: 0 }}

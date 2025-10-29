@@ -2,13 +2,52 @@
 
 import React, { useState } from 'react';
 import { ConnectionState } from 'livekit-client';
+import { toast } from 'sonner';
 import { useConnectionState, useParticipants, useRoomContext } from '@livekit/components-react';
-import { cn, formatDateTime } from '@/lib/utils';
+import { ShareNetworkIcon } from '@phosphor-icons/react';
+import {
+  type UrlParameters,
+  buildShareableUrl,
+  extractUrlParametersFromRoomName,
+} from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
-export const RoomInfo = () => {
+interface RoomInfoProps {
+  connectionData?: {
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+    participantName: string;
+    participantType: 'user' | 'human_agent';
+  };
+}
+
+export const RoomInfo = ({ connectionData }: RoomInfoProps) => {
   const room = useRoomContext();
   const connectionState = useConnectionState();
   const participants = useParticipants();
+
+  // Handle copying URL to clipboard
+  const handleCopyUrl = async () => {
+    if (!connectionData) return;
+
+    try {
+      const urlParams = extractUrlParametersFromRoomName(
+        connectionData.roomName,
+        connectionData.participantType
+      );
+
+      const url = buildShareableUrl(urlParams);
+
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard!', {
+        description: 'Share this URL to let others join with the same settings',
+      });
+    } catch (error) {
+      console.error('Failed to copy URL:', error);
+      toast.error('Failed to copy link');
+    }
+  };
 
   const getConnectionColor = () => {
     switch (connectionState) {
@@ -81,21 +120,17 @@ export const RoomInfo = () => {
           </div>
         </div>
 
-        {/* Participants Breakdown */}
-        <div className="mt-2 border-t border-gray-700/50 pt-2">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">Users:</span>
-            <span className="text-gray-300">{userCount}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">Agents:</span>
-            <span className="text-gray-300">{agentCount}</span>
-          </div>
-          <div className="flex items-center justify-between font-semibold">
-            <span className="text-gray-400">Total:</span>
-            <span className="text-gray-300">{participants.length}</span>
-          </div>
-        </div>
+        {/* Share URL Button */}
+        {connectionData && (
+          <button
+            onClick={handleCopyUrl}
+            className="mt-4 flex w-auto cursor-pointer items-end justify-between space-x-4 justify-self-end rounded-lg bg-gray-700/50 px-4 py-2 text-white transition-colors hover:bg-gray-700"
+            title="Copy shareable link"
+          >
+            <span className="text-xs font-medium">Share URL</span>
+            <ShareNetworkIcon size={14} weight="regular" className="text-gray-400" />
+          </button>
+        )}
       </div>
     </div>
   );

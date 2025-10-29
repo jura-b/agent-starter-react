@@ -26,12 +26,20 @@ function isAgentAvailable(agentState: AgentState) {
 
 interface SessionViewProps {
   appConfig: AppConfig;
+  connectionData?: {
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+    participantName: string;
+    participantType: 'user' | 'human_agent';
+  };
   disabled: boolean;
   sessionStarted: boolean;
 }
 
 export const SessionView = ({
   appConfig,
+  connectionData,
   disabled,
   sessionStarted,
   ref,
@@ -80,6 +88,7 @@ export const SessionView = ({
       {sessionStarted && (
         <Sidebar
           appConfig={appConfig}
+          connectionData={connectionData}
           localParticipant={localParticipant}
           onCollapseChange={setSidebarCollapsed}
         />

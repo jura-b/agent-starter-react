@@ -12,6 +12,78 @@ export const SANDBOX_ID = process.env.SANDBOX_ID;
 export const THEME_STORAGE_KEY = 'theme-mode';
 export const THEME_MEDIA_QUERY = '(prefers-color-scheme: dark)';
 
+// URL building utilities
+export interface UrlParameters {
+  from: string;
+  to: string;
+  suffix?: string;
+  type: 'user' | 'human_agent';
+}
+
+/**
+ * Builds a shareable URL with the given parameters
+ * @param params - URL parameters to include
+ * @param pathname - Optional pathname (defaults to current window location pathname)
+ * @param origin - Optional origin (defaults to current window location origin)
+ * @returns Complete URL with query parameters
+ */
+export function buildShareableUrl(
+  params: UrlParameters,
+  pathname?: string,
+  origin?: string
+): string {
+  const searchParams = new URLSearchParams();
+
+  // Add required parameters
+  searchParams.set('from', params.from.trim());
+  searchParams.set('to', params.to.trim());
+  searchParams.set('type', params.type);
+
+  // Add optional suffix if provided
+  if (params.suffix && params.suffix.trim()) {
+    searchParams.set('suffix', params.suffix.trim());
+  }
+
+  const urlOrigin = origin || (typeof window !== 'undefined' ? window.location.origin : '');
+  const urlPathname = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+
+  return `${urlOrigin}${urlPathname}?${searchParams.toString()}`;
+}
+
+/**
+ * Extracts URL parameters from a room name
+ * @param roomName - Room name in format "web_from_to_suffix" or similar
+ * @param participantType - Type of participant
+ * @returns UrlParameters object
+ */
+export function extractUrlParametersFromRoomName(
+  roomName: string,
+  participantType: 'user' | 'human_agent'
+): UrlParameters {
+  const roomParts = roomName.split('_');
+
+  // Default values
+  const params: UrlParameters = {
+    from: '+66',
+    to: '+66',
+    type: participantType,
+  };
+
+  // Extract phone numbers from room name
+  if (roomParts.length >= 2) {
+    params.from = roomParts[1] || '+66';
+  }
+  if (roomParts.length >= 3) {
+    params.to = roomParts[2] || '+66';
+  }
+  if (roomParts.length > 3) {
+    // Everything after the first 3 parts is the suffix
+    params.suffix = roomParts.slice(3).join('_');
+  }
+
+  return params;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

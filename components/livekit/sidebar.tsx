@@ -13,6 +13,13 @@ import { RoomStartTime } from './room-start-time';
 
 interface SidebarProps {
   appConfig: AppConfig;
+  connectionData?: {
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+    participantName: string;
+    participantType: 'user' | 'human_agent';
+  };
   localParticipant: LocalParticipant | undefined;
   onCollapseChange?: (collapsed: boolean) => void;
   className?: string;
@@ -20,6 +27,7 @@ interface SidebarProps {
 
 export function Sidebar({
   appConfig,
+  connectionData,
   localParticipant,
   onCollapseChange,
   className,
@@ -79,7 +87,7 @@ export function Sidebar({
             <ParticipantsList />
             <hr className="border-gray-700" />
             {/* Room Info Panel */}
-            <RoomInfo />
+            <RoomInfo connectionData={connectionData} />
             <hr className="border-gray-700" />
             {/* Agent Actions Panel */}
             <AgentActionPanel localParticipant={localParticipant} />

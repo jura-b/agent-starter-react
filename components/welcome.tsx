@@ -5,6 +5,7 @@ import { KeyReturnIcon, ShareNetworkIcon } from '@phosphor-icons/react';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
 import { Button } from '@/components/ui/button';
 import type { AppConfig } from '@/lib/types';
+import { type UrlParameters, buildShareableUrl } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
 interface WelcomeProps {
@@ -50,17 +51,14 @@ export const Welcome = ({
 
   // Generate shareable URL with current form values
   const generateShareableUrl = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('from', fromPhoneNumber.trim());
-    params.set('to', destinationPhoneNumber.trim());
-    if (suffix.trim()) {
-      params.set('suffix', suffix.trim());
-    } else {
-      params.delete('suffix');
-    }
-    params.set('type', participantType);
+    const urlParams: UrlParameters = {
+      from: fromPhoneNumber.trim(),
+      to: destinationPhoneNumber.trim(),
+      type: participantType,
+      suffix: suffix.trim() || undefined,
+    };
 
-    return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    return buildShareableUrl(urlParams);
   };
 
   // Handle copying URL to clipboard
@@ -94,20 +92,17 @@ export const Welcome = ({
       participantType !== 'user';
 
     if (hasUserInteracted) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('from', fromPhoneNumber.trim());
-      params.set('to', destinationPhoneNumber.trim());
-      if (suffix.trim()) {
-        params.set('suffix', suffix.trim());
-      } else {
-        params.delete('suffix');
-      }
-      params.set('type', participantType);
+      const urlParams: UrlParameters = {
+        from: fromPhoneNumber.trim(),
+        to: destinationPhoneNumber.trim(),
+        type: participantType,
+        suffix: suffix.trim() || undefined,
+      };
 
-      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      const newUrl = buildShareableUrl(urlParams);
       router.push(newUrl, { scroll: false });
     }
-  }, [fromPhoneNumber, destinationPhoneNumber, suffix, participantType, searchParams, router]);
+  }, [fromPhoneNumber, destinationPhoneNumber, suffix, participantType, router]);
 
   // Construct room name for preview
   const getRoomName = () => {
