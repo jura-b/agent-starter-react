@@ -78,6 +78,12 @@ export const Welcome = ({
     }
   };
 
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleStartCall();
+  };
+
   // Construct room name for preview
   const getRoomName = () => {
     const roomParts = ['web'];
@@ -153,7 +159,7 @@ export const Welcome = ({
         Chat live with your voice AI agent
       </p>
 
-      <div className="mt-6 w-64 space-y-3">
+      <form onSubmit={handleSubmit} className="mt-6 w-64 space-y-3">
         <div>
           <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">Prefix</label>
           <input
@@ -234,12 +240,21 @@ export const Welcome = ({
             </label>
           </div>
         </div>
-      </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="mt-6 w-64 transform-gpu font-mono transition-transform hover:scale-110"
+        >
+          {startButtonText}
+        </Button>
+      </form>
 
       {(fromPhoneNumber || destinationPhoneNumber) && (
         <button
           onClick={handleCopyUrl}
-          className="mt-12 w-96 cursor-pointer rounded-full border border-gray-600 bg-gray-800/50 p-3 text-white transition-colors hover:bg-gray-700/50 focus:ring focus:ring-blue-800/50 focus:outline-none"
+          className="mt-12 w-96 transform-gpu cursor-pointer rounded-full border border-gray-600 bg-gray-800/50 p-3 text-white transition-colors transition-transform hover:scale-110 hover:bg-gray-700/50 focus:ring focus:ring-blue-800/50 focus:outline-none"
           title="Share URL"
         >
           <div className="flex flex-col items-center justify-between">
@@ -261,10 +276,6 @@ export const Welcome = ({
           </div>
         </button>
       )}
-
-      <Button variant="primary" size="lg" onClick={handleStartCall} className="mt-6 w-64 font-mono">
-        {startButtonText}
-      </Button>
       <footer className="fixed bottom-5 left-0 z-20 flex w-full items-center justify-center"></footer>
     </section>
   );
