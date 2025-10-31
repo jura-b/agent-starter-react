@@ -98,7 +98,7 @@ export const Welcome = ({
     setSuffix(randomSuffix);
 
     // Validate required fields first
-    const roomName = getRoomName() + '_' + randomSuffix;
+    const roomName = getRoomName(randomSuffix);
 
     if (!roomName || roomName === 'web') {
       alert('Room name is required. Please enter phone numbers.');
@@ -148,7 +148,7 @@ export const Welcome = ({
   }, [fromPhoneNumber, destinationPhoneNumber, suffix, participantType, router]);
 
   // Construct room name for preview
-  const getRoomName = () => {
+  const getRoomName = (overwrittenSuffix?: string) => {
     const roomParts = ['web'];
     if (fromPhoneNumber.trim()) {
       roomParts.push(fromPhoneNumber.trim());
@@ -156,9 +156,13 @@ export const Welcome = ({
     if (destinationPhoneNumber.trim()) {
       roomParts.push(destinationPhoneNumber.trim());
     }
-    if (suffix.trim()) {
+
+    if (overwrittenSuffix) {
+      roomParts.push(overwrittenSuffix);
+    } else if (suffix.trim()) {
       roomParts.push(suffix.trim());
     }
+
     return roomParts.join('_');
   };
 
