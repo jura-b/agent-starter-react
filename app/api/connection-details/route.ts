@@ -61,6 +61,7 @@ export async function POST(req: Request) {
           'sip.phoneNumber': fromPhoneNumber,
           'sip.trunkPhoneNumber': destinationPhoneNumber,
           'zai.role': participantType, // "user" or "human_agent"
+          'zai.channel_type': 'livekit_audio',
         },
         ttl: '60m',
       },
