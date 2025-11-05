@@ -35,6 +35,12 @@ export const Welcome = ({
   const [destinationPhoneNumber, setDestinationPhoneNumber] = useState('+66');
   const [suffix, setSuffix] = useState('');
   const [participantType, setParticipantType] = useState<'user' | 'human_agent'>('user');
+  const [isSipCallLoading, setIsSipCallLoading] = useState(false);
+
+  // SIP form state variables
+  const [sipNumber, setSipNumber] = useState('+6625440004');
+  const [sipTrunkId, setSipTrunkId] = useState('ST_oMiP56KcpVuL');
+  const [sipCallTo, setSipCallTo] = useState('+66887997999');
 
   // Load form values from URL parameters on component mount
   useEffect(() => {
@@ -194,6 +200,86 @@ export const Welcome = ({
     });
   };
 
+  // Handle SIP form submission
+  const handleSipSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSipCallAndJoin();
+  };
+
+  // Construct SIP room name similar to left form
+  const getSipRoomName = () => {
+    const roomParts = ['web'];
+    if (sipNumber.trim()) {
+      roomParts.push(sipNumber.trim());
+    }
+    if (sipCallTo.trim()) {
+      roomParts.push(sipCallTo.trim());
+    }
+    return roomParts.join('_');
+  };
+
+  // Handle SIP call creation and room join
+  const handleSipCallAndJoin = async () => {
+    setIsSipCallLoading(true);
+
+    try {
+      // Validate required SIP fields
+      if (!sipNumber.trim() || !sipTrunkId.trim() || !sipCallTo.trim()) {
+        throw new Error('Please fill in all required SIP fields');
+      }
+
+      // Generate room name
+      const generatedRoomName = getSipRoomName();
+
+      // Create SIP participant with form values (this will also dispatch agent)
+      const sipResponse = await fetch('/api/sip-participant', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sip_number: sipNumber.trim(),
+          sip_trunk_id: sipTrunkId.trim(),
+          sip_call_to: sipCallTo.trim(),
+          room_name: generatedRoomName,
+          wait_until_answered: true,
+        }),
+      });
+
+      if (!sipResponse.ok) {
+        const errorData = await sipResponse.text();
+        throw new Error(`Room setup failed: ${errorData}`);
+      }
+
+      const sipData = await sipResponse.json();
+      console.log('Room setup completed:', sipData);
+
+      // Show success message
+      toast.success('Room setup complete!', {
+        description: 'SIP call created and agent dispatched. Joining as human-agent...',
+      });
+
+      // Wait a moment for the SIP call and agent to be ready
+      setTimeout(() => {
+        // Join the room as human-agent
+        onStartCall({
+          roomName: generatedRoomName,
+          fromPhoneNumber: sipNumber.trim(),
+          destinationPhoneNumber: sipCallTo.trim(),
+          participantName: 'Human Agent',
+          participantType: 'human_agent',
+        });
+      }, 3000); // Delay to allow SIP call and agent to initialize
+    } catch (error) {
+      console.error('Room setup error:', error);
+      toast.error('Failed to setup room', {
+        description: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+    } finally {
+      setIsSipCallLoading(false);
+    }
+  };
+
   return (
     <section
       ref={ref}
@@ -222,108 +308,194 @@ export const Welcome = ({
         Chat live with your voice AI agent
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 w-64 space-y-3">
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">Prefix</label>
-          <input
-            type="text"
-            value="web"
-            disabled
-            className="w-full cursor-not-allowed rounded-full border border-gray-300 bg-gray-100 px-4 py-2 text-gray-600"
-          />
-        </div>
+      <div className="mt-6 flex w-full max-w-6xl">
+        {/* Left Column - Original Form */}
+        <div className="w-1/2 flex-1 justify-items-start border-r border-gray-600">
+          <div className="w-full max-w-120 space-y-4 px-8">
+            <h3 className="text-fg1 mb-4 text-center text-lg font-medium">
+              Simulate SIP Inbound Call
+            </h3>
 
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-            From Phone Number <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={fromPhoneNumber}
-            onChange={(e) => setFromPhoneNumber(e.target.value)}
-            placeholder="Enter from phone number"
-            className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
+            <form onSubmit={handleSubmit} className="w-full max-w-120 space-y-3 px-8">
+              <div>
+                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                  Prefix
+                </label>
+                <input
+                  type="text"
+                  value="web"
+                  disabled
+                  className="w-full cursor-not-allowed rounded-full border border-gray-300 bg-gray-100 px-4 py-2 text-gray-600"
+                />
+              </div>
 
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-            Destination Phone Number <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={destinationPhoneNumber}
-            onChange={(e) => setDestinationPhoneNumber(e.target.value)}
-            placeholder="Enter destination phone number"
-            className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
+              <div>
+                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                  From Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={fromPhoneNumber}
+                  onChange={(e) => setFromPhoneNumber(e.target.value)}
+                  placeholder="Enter from phone number"
+                  className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
 
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-            Suffix <span className="text-gray-500">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={suffix}
-            onChange={(e) => setSuffix(e.target.value)}
-            placeholder="Enter suffix"
-            className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-        </div>
+              <div>
+                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                  Destination Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={destinationPhoneNumber}
+                  onChange={(e) => setDestinationPhoneNumber(e.target.value)}
+                  placeholder="Enter destination phone number"
+                  className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
 
-        <div>
-          <label className="text-fg1 mb-3 block pl-4 text-left text-sm font-medium">
-            Participant Type
-          </label>
-          <div className="space-y-2">
-            <label className="flex cursor-pointer items-center space-x-3 rounded-md px-4 transition-colors hover:bg-gray-800">
-              <input
-                type="radio"
-                name="participantType"
-                value="user"
-                checked={participantType === 'user'}
-                onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
-                className="h-4 w-4"
-              />
-              <span className="text-sm text-gray-200">User</span>
-            </label>
-            <label className="flex cursor-pointer items-center space-x-3 rounded-md px-4 transition-colors hover:bg-gray-800">
-              <input
-                type="radio"
-                name="participantType"
-                value="human_agent"
-                checked={participantType === 'human_agent'}
-                onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
-                className="h-4 w-4"
-              />
-              <span className="text-sm text-gray-200">Human Agent</span>
-            </label>
+              <div>
+                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                  Suffix <span className="text-gray-500">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={suffix}
+                  onChange={(e) => setSuffix(e.target.value)}
+                  placeholder="Enter suffix"
+                  className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-fg1 mb-3 block pl-4 text-left text-sm font-medium">
+                  Participant Type
+                </label>
+                <div className="space-y-2">
+                  <label className="flex cursor-pointer items-center space-x-3 rounded-md px-4 transition-colors hover:bg-gray-800">
+                    <input
+                      type="radio"
+                      name="participantType"
+                      value="user"
+                      checked={participantType === 'user'}
+                      onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
+                      className="h-4 w-4"
+                    />
+                    <span className="text-sm text-gray-200">User</span>
+                  </label>
+                  <label className="flex cursor-pointer items-center space-x-3 rounded-md px-4 transition-colors hover:bg-gray-800">
+                    <input
+                      type="radio"
+                      name="participantType"
+                      value="human_agent"
+                      checked={participantType === 'human_agent'}
+                      onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
+                      className="h-4 w-4"
+                    />
+                    <span className="text-sm text-gray-200">Human Agent</span>
+                  </label>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="mt-6 w-72 transform-gpu font-mono transition-transform hover:scale-110"
+              >
+                {startButtonText} <KeyReturnIcon size={16} weight="fill" />
+              </Button>
+
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={handleRandomSuffixAndStart}
+                className="mt-3 w-72 transform-gpu flex-row items-center justify-center font-mono text-xs text-gray-300 transition-transform hover:scale-110 hover:bg-gray-800 hover:text-white"
+              >
+                <DiceFiveIcon size={16} weight="fill" className="animate-roll2 flex" />
+                <span className="flex">Random Suffix and Start</span>
+                <DiceTwoIcon size={16} weight="fill" className="animate-roll flex" />
+              </Button>
+            </form>
           </div>
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="mt-6 w-72 transform-gpu font-mono transition-transform hover:scale-110"
-        >
-          {startButtonText} <KeyReturnIcon size={16} weight="fill" />
-        </Button>
+        {/* Right Column - SIP Form */}
+        <div className="w-1/2 flex-1 justify-items-end">
+          <div className="w-full max-w-120 space-y-4 px-8">
+            <h3 className="text-fg1 mb-4 text-center text-lg font-medium">
+              Real SIP Outbound Call
+            </h3>
 
-        <Button
-          variant="secondary"
-          size="lg"
-          onClick={handleRandomSuffixAndStart}
-          className="mt-3 flex w-72 transform-gpu flex-row items-center justify-center font-mono text-xs text-gray-300 transition-transform hover:scale-110 hover:bg-gray-800 hover:text-white"
-        >
-          <DiceFiveIcon size={16} weight="fill" className="animate-roll2 flex" />
-          <span className="flex">Random Suffix and Start</span>
-          <DiceTwoIcon size={16} weight="fill" className="animate-roll flex" />
-        </Button>
-      </form>
+            <form onSubmit={handleSipSubmit} className="space-y-3">
+              <div>
+                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                  SIP Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={sipNumber}
+                  disabled
+                  className="w-full cursor-not-allowed rounded-full border border-gray-300 bg-gray-100 px-4 py-2 text-gray-600"
+                />
+              </div>
+
+              <div>
+                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                  SIP Trunk ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={sipTrunkId}
+                  disabled
+                  className="w-full cursor-not-allowed rounded-full border border-gray-300 bg-gray-100 px-4 py-2 text-gray-600"
+                />
+              </div>
+
+              <div>
+                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                  SIP Call To <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={sipCallTo}
+                  onChange={(e) => setSipCallTo(e.target.value)}
+                  placeholder="Enter destination number"
+                  className="w-full rounded-full border border-gray-300 bg-gray-200 px-4 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isSipCallLoading}
+                variant="primary"
+                size="lg"
+                className="mt-6 w-72 transform-gpu font-mono transition-transform hover:scale-110"
+              >
+                {isSipCallLoading ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Setting up room...
+                  </>
+                ) : (
+                  <>
+                    Create SIP Call & Join
+                    <KeyReturnIcon size={16} weight="fill" />
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <p className="text-center text-xs text-gray-400">
+              Init SIP call, and join as human-agent
+            </p>
+          </div>
+        </div>
+      </div>
 
       {(fromPhoneNumber || destinationPhoneNumber) && (
         <button
