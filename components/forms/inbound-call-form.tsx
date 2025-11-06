@@ -187,9 +187,7 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
 
   return (
     <div className="w-full max-w-120 space-y-4 px-8">
-      <h3 className="text-fg1 mb-4 text-center text-lg font-medium">
-        SIP Inbound Call
-      </h3>
+      <h3 className="text-fg1 mb-4 text-center text-lg font-medium">SIP Inbound Call</h3>
 
       <form onSubmit={handleSubmit} className="w-full space-y-3">
         <div>
@@ -201,7 +199,7 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
             value={fromPhoneNumber}
             onChange={(e) => setFromPhoneNumber(e.target.value)}
             placeholder="Enter from phone number"
-            className="w-full rounded-full border border-primary/50 bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary focus:outline-none bg-primary/10"
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           />
         </div>
@@ -215,7 +213,7 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
             value={destinationPhoneNumber}
             onChange={(e) => setDestinationPhoneNumber(e.target.value)}
             placeholder="Enter destination phone number"
-            className="w-full rounded-full border border-primary/50 bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary focus:outline-none bg-primary/10"
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           />
         </div>
@@ -229,7 +227,7 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
             value={suffix}
             onChange={(e) => setSuffix(e.target.value)}
             placeholder="Enter suffix"
-            className="w-full rounded-full border border-primary/50 bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary focus:outline-none bg-primary/10"
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
           />
         </div>
 
@@ -237,28 +235,28 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
           <label className="text-fg1 mb-3 block pl-4 text-left text-sm font-medium">
             Participant Type
           </label>
-          <div className="space-x-3 flex flex-row items-center justify-center">
-            <label className="flex flex-1 cursor-pointer items-center p-3 rounded-lg border-2 border-gray-300 has-checked:border-primary/50 has-checked:bg-primary/10 text-gray-300 has-checked:text-primary hover:bg-primary/20 transition-colors">
+          <div className="flex flex-row items-center justify-center space-x-3">
+            <label className="has-checked:border-primary/50 has-checked:bg-primary/10 has-checked:text-primary hover:bg-primary/20 flex flex-1 cursor-pointer items-center rounded-lg border-2 border-gray-300 p-3 text-gray-300 transition-colors">
               <input
                 type="radio"
                 name="participantType"
                 value="user"
                 checked={participantType === 'user'}
                 onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
-                className="h-3 w-3 mr-2 accent-primary"
+                className="accent-primary mr-2 h-3 w-3"
               />
               <span className="text-sm">User</span>
             </label>
-            <label className="flex flex-1 cursor-pointer items-center p-3 rounded-lg border-2 border-gray-400 has-checked:border-primary/50 has-checked:bg-primary/10 text-gray-400 has-checked:text-primary hover:bg-primary/20 transition-colors">
+            <label className="has-checked:border-primary/50 has-checked:bg-primary/10 has-checked:text-primary hover:bg-primary/20 flex flex-1 cursor-pointer items-center rounded-lg border-2 border-gray-400 p-3 text-gray-400 transition-colors">
               <input
                 type="radio"
                 name="participantType"
                 value="human_agent"
                 checked={participantType === 'human_agent'}
                 onChange={(e) => setParticipantType(e.target.value as 'user' | 'human_agent')}
-                className="h-3 w-3 mr-2 accent-primary"
+                className="accent-primary mr-2 h-3 w-3"
               />
-              <span className="text-sm ">Human Agent</span>
+              <span className="text-sm">Human Agent</span>
             </label>
           </div>
         </div>

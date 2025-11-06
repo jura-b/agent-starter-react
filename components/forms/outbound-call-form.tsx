@@ -80,7 +80,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
           sip_trunk_id: sipTrunkId.trim(),
           sip_call_to: sipCallTo.trim(),
           room_name: generatedRoomName,
-          wait_until_answered: true
+          wait_until_answered: true,
         }),
       });
 
@@ -108,7 +108,6 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
           participantType: 'human_agent',
         });
       }, 3000); // Delay to allow SIP call and agent to initialize
-
     } catch (error) {
       console.error('Room setup error:', error);
       toast.error('Failed to setup room', {
@@ -145,9 +144,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
   useEffect(() => {
     // Skip on initial mount to avoid overriding URL parameters
     const hasSipUserInteracted =
-      sipNumber !== '+6625440004' ||
-      sipCallTo !== '+66' ||
-      sipTrunkId !== 'ST_oMiP56KcpVuL';
+      sipNumber !== '+6625440004' || sipCallTo !== '+66' || sipTrunkId !== 'ST_oMiP56KcpVuL';
 
     if (hasSipUserInteracted) {
       const sipUrlParams: SipCallUrlParameters = {
@@ -163,9 +160,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
 
   return (
     <div className="w-full max-w-120 space-y-4 px-8">
-      <h3 className="text-fg1 mb-4 text-center text-lg font-medium">
-        SIP Outbound Call
-      </h3>
+      <h3 className="text-fg1 mb-4 text-center text-lg font-medium">SIP Outbound Call</h3>
 
       <form onSubmit={handleSipSubmit} className="space-y-3">
         <div>
@@ -176,7 +171,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
             type="text"
             value={sipNumber}
             disabled
-            className="w-full cursor-not-allowed rounded-full border border-primary/50 bg-gray-200 px-4 py-2 text-gray-500 focus:border-transparent focus:ring-2 focus:ring-primary focus:outline-none bg-primary/10"
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full cursor-not-allowed rounded-full border bg-gray-200 px-4 py-2 text-gray-500 focus:border-transparent focus:ring-2 focus:outline-none"
           />
         </div>
 
@@ -188,7 +183,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
             type="text"
             value={sipTrunkId}
             disabled
-            className="w-full cursor-not-allowed rounded-full border border-primary/50 bg-gray-200 px-4 py-2 text-gray-500 focus:border-transparent focus:ring-2 focus:ring-primary focus:outline-none bg-primary/10"
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full cursor-not-allowed rounded-full border bg-gray-200 px-4 py-2 text-gray-500 focus:border-transparent focus:ring-2 focus:outline-none"
           />
         </div>
 
@@ -201,7 +196,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
             value={sipCallTo}
             onChange={(e) => setSipCallTo(e.target.value)}
             placeholder="Enter destination number"
-            className="w-full rounded-full border border-primary/50 bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary focus:outline-none bg-primary/10"
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           />
         </div>
@@ -227,10 +222,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
         </Button>
       </form>
 
-
-      <p className="text-center text-xs text-gray-400">
-        Init SIP call, and join as human-agent
-      </p>
+      <p className="text-center text-xs text-gray-400">Init SIP call, and join as human-agent</p>
 
       {/* Share URL Button for SIP Form */}
       {(sipNumber.trim() || sipCallTo.trim()) && (
@@ -258,7 +250,6 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
           </div>
         </button>
       )}
-
     </div>
   );
 };

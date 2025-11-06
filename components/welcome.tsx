@@ -1,6 +1,6 @@
-import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
 import { InboundCallForm } from '@/components/forms/inbound-call-form';
 import { OutboundCallForm } from '@/components/forms/outbound-call-form';
+import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
 import type { AppConfig } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -55,17 +55,12 @@ export const Welcome = ({
       <div className="mt-6 flex w-full max-w-6xl">
         {/* Left Column - Inbound Call Form */}
         <div className="w-1/2 flex-1 justify-items-start border-r border-gray-600">
-          <InboundCallForm
-            startButtonText={startButtonText}
-            onStartCall={onStartCall}
-          />
+          <InboundCallForm startButtonText={startButtonText} onStartCall={onStartCall} />
         </div>
 
         {/* Right Column - Outbound Call Form */}
         <div className="w-1/2 flex-1 justify-items-end">
-          <OutboundCallForm
-            onStartCall={onStartCall}
-          />
+          <OutboundCallForm onStartCall={onStartCall} />
         </div>
       </div>
 
