@@ -25,6 +25,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
   const [sipNumber, setSipNumber] = useState('+6625440004');
   const [sipTrunkId, setSipTrunkId] = useState('ST_oMiP56KcpVuL');
   const [sipCallTo, setSipCallTo] = useState('+66');
+  const [shouldJoinAsHumanAgent, setShouldJoinAsHumanAgent] = useState(true);
   const [isSipCallLoading, setIsSipCallLoading] = useState(false);
 
   // Load SIP form values from URL parameters on component mount
@@ -99,15 +100,21 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
 
       // Wait a moment for the SIP call and agent to be ready
       setTimeout(() => {
-        // Join the room as human-agent
-        onStartCall({
-          roomName: generatedRoomName,
-          fromPhoneNumber: sipNumber.trim(),
-          destinationPhoneNumber: sipCallTo.trim(),
-          participantName: 'Human Agent',
-          participantType: 'human_agent',
-        });
-      }, 3000); // Delay to allow SIP call and agent to initialize
+        // Only join if user selected to join as human agent
+        if (shouldJoinAsHumanAgent) {
+          onStartCall({
+            roomName: generatedRoomName,
+            fromPhoneNumber: sipNumber.trim(),
+            destinationPhoneNumber: sipCallTo.trim(),
+            participantName: 'Human Agent',
+            participantType: 'human_agent',
+          });
+        } else {
+          toast.success('SIP call created successfully!', {
+            description: 'Agent dispatched to room. Not joining room.',
+          });
+        }
+      }, 2000); // Delay to allow SIP call and agent to initialize
     } catch (error) {
       console.error('Room setup error:', error);
       toast.error('Failed to setup room', {
@@ -170,8 +177,10 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
           <input
             type="text"
             value={sipNumber}
-            disabled
-            className="border-primary/50 focus:ring-primary bg-primary/10 w-full cursor-not-allowed rounded-full border bg-gray-200 px-4 py-2 text-gray-500 focus:border-transparent focus:ring-2 focus:outline-none"
+            onChange={(e) => setSipNumber(e.target.value)}
+            placeholder="Enter SIP number"
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+            required
           />
         </div>
 
@@ -199,6 +208,36 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
             className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           />
+        </div>
+
+        <div>
+          <label className="text-fg1 mb-3 block pl-4 text-left text-sm font-medium">
+            After Call Picked Up
+          </label>
+          <div className="flex flex-row items-center justify-center space-x-3">
+            <label className="has-checked:border-primary/50 has-checked:bg-primary/10 has-checked:text-primary hover:bg-primary/20 flex flex-1 cursor-pointer items-center rounded-lg border-2 border-gray-400 p-3 text-gray-400 transition-colors">
+              <input
+                type="radio"
+                name="joinOption"
+                value="join"
+                checked={shouldJoinAsHumanAgent}
+                onChange={() => setShouldJoinAsHumanAgent(true)}
+                className="accent-primary mr-2 h-3 w-3"
+              />
+              <span className="text-sm">Join as Human Agent</span>
+            </label>
+            <label className="has-checked:border-primary/50 has-checked:bg-primary/10 has-checked:text-primary hover:bg-primary/20 flex flex-1 cursor-pointer items-center rounded-lg border-2 border-gray-400 p-3 text-gray-400 transition-colors">
+              <input
+                type="radio"
+                name="joinOption"
+                value="dontJoin"
+                checked={!shouldJoinAsHumanAgent}
+                onChange={() => setShouldJoinAsHumanAgent(false)}
+                className="accent-primary mr-2 h-3 w-3"
+              />
+              <span className="text-sm">Do Not Join</span>
+            </label>
+          </div>
         </div>
 
         <Button

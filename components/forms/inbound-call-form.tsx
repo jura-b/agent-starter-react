@@ -236,7 +236,7 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
             Participant Type
           </label>
           <div className="flex flex-row items-center justify-center space-x-3">
-            <label className="has-checked:border-primary/50 has-checked:bg-primary/10 has-checked:text-primary hover:bg-primary/20 flex flex-1 cursor-pointer items-center rounded-lg border-2 border-gray-300 p-3 text-gray-300 transition-colors">
+            <label className="has-checked:border-primary/50 has-checked:bg-primary/10 has-checked:text-primary hover:bg-primary/20 flex flex-1 cursor-pointer items-center rounded-lg border-2 border-gray-400 p-3 text-gray-400 transition-colors">
               <input
                 type="radio"
                 name="participantType"

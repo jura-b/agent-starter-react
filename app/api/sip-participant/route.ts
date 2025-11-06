@@ -57,6 +57,8 @@ export async function POST(req: Request) {
         waitUntilAnswered: wait_until_answered,
         fromNumber: sip_number,
         playRingtone: true,
+        playDialtone: true,
+        krispEnabled: true,
       }
     );
 
