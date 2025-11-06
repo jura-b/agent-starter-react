@@ -13,22 +13,28 @@ export const THEME_STORAGE_KEY = 'theme-mode';
 export const THEME_MEDIA_QUERY = '(prefers-color-scheme: dark)';
 
 // URL building utilities
-export interface UrlParameters {
+export interface SimulatedCallUrlParameters {
   from: string;
   to: string;
   suffix?: string;
   type: 'user' | 'human_agent';
 }
 
+export interface SipCallUrlParameters {
+  sip_from: string;
+  sip_to: string;
+  sip_trunk: string;
+}
+
 /**
- * Builds a shareable URL with the given parameters
- * @param params - URL parameters to include
+ * Builds a shareable URL for simulated call parameters
+ * @param params - Simulated call URL parameters to include
  * @param pathname - Optional pathname (defaults to current window location pathname)
  * @param origin - Optional origin (defaults to current window location origin)
  * @returns Complete URL with query parameters
  */
-export function buildShareableUrl(
-  params: UrlParameters,
+export function buildSimulatedCallUrl(
+  params: SimulatedCallUrlParameters,
   pathname?: string,
   origin?: string
 ): string {
@@ -51,25 +57,101 @@ export function buildShareableUrl(
 }
 
 /**
- * Extracts URL parameters from a room name
- * @param roomName - Room name in format "web_from_to_suffix" or similar
+ * Builds a shareable URL for SIP call parameters
+ * @param params - SIP call URL parameters to include
+ * @param pathname - Optional pathname (defaults to current window location pathname)
+ * @param origin - Optional origin (defaults to current window location origin)
+ * @returns Complete URL with query parameters
+ */
+export function buildSipCallUrl(
+  params: SipCallUrlParameters,
+  pathname?: string,
+  origin?: string
+): string {
+  const searchParams = new URLSearchParams();
+
+  // Add required parameters
+  searchParams.set('sip_from', params.sip_from.trim());
+  searchParams.set('sip_to', params.sip_to.trim());
+  searchParams.set('sip_trunk', params.sip_trunk.trim());
+
+  const urlOrigin = origin || (typeof window !== 'undefined' ? window.location.origin : '');
+  const urlPathname = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+
+  return `${urlOrigin}${urlPathname}?${searchParams.toString()}`;
+}
+
+// Keep the original function for backward compatibility
+export function buildShareableUrl(
+  params: SimulatedCallUrlParameters,
+  pathname?: string,
+  origin?: string
+): string {
+  return buildSimulatedCallUrl(params, pathname, origin);
+}
+
+/**
+ * Extracts URL parameters from a room name based on prefix
+ * @param roomName - Room name in format "webin_from_to_suffix" or "webout_from_to"
  * @param participantType - Type of participant
- * @returns UrlParameters object
+ * @returns SimulatedCallUrlParameters or SipCallUrlParameters object
  */
 export function extractUrlParametersFromRoomName(
   roomName: string,
   participantType: 'user' | 'human_agent'
-): UrlParameters {
+): SimulatedCallUrlParameters | SipCallUrlParameters {
   const roomParts = roomName.split('_');
+  const prefix = roomParts[0];
 
-  // Default values
-  const params: UrlParameters = {
+  // Handle inbound call rooms (webin)
+  if (prefix === 'webin') {
+    const params: SimulatedCallUrlParameters = {
+      from: '+66',
+      to: '+66',
+      type: participantType,
+    };
+
+    // Extract phone numbers from room name
+    if (roomParts.length >= 2) {
+      params.from = roomParts[1] || '+66';
+    }
+    if (roomParts.length >= 3) {
+      params.to = roomParts[2] || '+66';
+    }
+    if (roomParts.length > 3) {
+      // Everything after the first 3 parts is the suffix
+      params.suffix = roomParts.slice(3).join('_');
+    }
+
+    return params;
+  }
+
+  // Handle outbound call rooms (webout)
+  if (prefix === 'webout') {
+    const params: SipCallUrlParameters = {
+      sip_from: '+6625440004',
+      sip_to: '+66',
+      sip_trunk: 'ST_oMiP56KcpVuL',
+    };
+
+    // Extract SIP parameters from room name
+    if (roomParts.length >= 2) {
+      params.sip_from = roomParts[1] || '+6625440004';
+    }
+    if (roomParts.length >= 3) {
+      params.sip_to = roomParts[2] || '+66';
+    }
+
+    return params;
+  }
+
+  // Fallback for old 'web' prefix (treat as inbound)
+  const params: SimulatedCallUrlParameters = {
     from: '+66',
     to: '+66',
     type: participantType,
   };
 
-  // Extract phone numbers from room name
   if (roomParts.length >= 2) {
     params.from = roomParts[1] || '+66';
   }
@@ -77,7 +159,6 @@ export function extractUrlParametersFromRoomName(
     params.to = roomParts[2] || '+66';
   }
   if (roomParts.length > 3) {
-    // Everything after the first 3 parts is the suffix
     params.suffix = roomParts.slice(3).join('_');
   }
 

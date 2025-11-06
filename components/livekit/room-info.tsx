@@ -6,8 +6,10 @@ import { toast } from 'sonner';
 import { useConnectionState, useParticipants, useRoomContext } from '@livekit/components-react';
 import { ShareNetworkIcon } from '@phosphor-icons/react';
 import {
-  type UrlParameters,
-  buildShareableUrl,
+  type SimulatedCallUrlParameters,
+  type SipCallUrlParameters,
+  buildSimulatedCallUrl,
+  buildSipCallUrl,
   extractUrlParametersFromRoomName,
 } from '@/lib/utils';
 import { cn } from '@/lib/utils';
@@ -37,12 +39,24 @@ export const RoomInfo = ({ connectionData }: RoomInfoProps) => {
         connectionData.participantType
       );
 
-      const url = buildShareableUrl(urlParams);
+      let url: string;
+
+      // Check if it's a SIP call (outbound) or simulated call (inbound)
+      if ('sip_from' in urlParams) {
+        // SIP call parameters - use SIP URL builder
+        url = buildSipCallUrl(urlParams as SipCallUrlParameters);
+        toast.success('SIP call link copied to clipboard!', {
+          description: 'Share this URL to let others join the same SIP call room',
+        });
+      } else {
+        // Simulated call parameters - use simulated call URL builder
+        url = buildSimulatedCallUrl(urlParams as SimulatedCallUrlParameters);
+        toast.success('Link copied to clipboard!', {
+          description: 'Share this URL to let others join with the same settings',
+        });
+      }
 
       await navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!', {
-        description: 'Share this URL to let others join with the same settings',
-      });
     } catch (error) {
       console.error('Failed to copy URL:', error);
       toast.error('Failed to copy link');
@@ -78,9 +92,6 @@ export const RoomInfo = ({ connectionData }: RoomInfoProps) => {
         return 'Unknown';
     }
   };
-
-  const agentCount = participants.filter((p) => p.isAgent).length;
-  const userCount = participants.filter((p) => !p.isAgent).length;
 
   return (
     <div className="p-0">
