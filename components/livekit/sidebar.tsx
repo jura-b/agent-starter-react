@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { LocalParticipant } from 'livekit-client';
+import type { LocalParticipant, RemoteParticipant } from 'livekit-client';
 import type { AppConfig } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { AgentActionPanel } from './agent-action-panel';
@@ -21,6 +21,7 @@ interface SidebarProps {
     participantType: 'user' | 'human_agent';
   };
   localParticipant: LocalParticipant | undefined;
+  remoteParticipants: RemoteParticipant[] | undefined;
   onCollapseChange?: (collapsed: boolean) => void;
   className?: string;
 }
@@ -29,6 +30,7 @@ export function Sidebar({
   appConfig,
   connectionData,
   localParticipant,
+  remoteParticipants,
   onCollapseChange,
   className,
 }: SidebarProps) {
@@ -90,7 +92,10 @@ export function Sidebar({
             <RoomInfo connectionData={connectionData} />
             <hr className="border-gray-700" />
             {/* Agent Actions Panel */}
-            <AgentActionPanel localParticipant={localParticipant} />
+            <AgentActionPanel
+              localParticipant={localParticipant}
+              remoteParticipants={remoteParticipants}
+            />
             <hr className="border-gray-700" />
             {/* Phone Numpad Panel */}
             <PhoneNumpad localParticipant={localParticipant} />

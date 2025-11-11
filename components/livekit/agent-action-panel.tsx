@@ -1,45 +1,57 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { LocalParticipant } from 'livekit-client';
+import type { LocalParticipant, RemoteParticipant } from 'livekit-client';
 import type { SendTextOptions } from 'livekit-client';
+import { json } from 'node:stream/consumers';
 import { cn } from '@/lib/utils';
 
 interface AgentActionPanelProps {
   localParticipant: LocalParticipant | undefined;
+  remoteParticipants: RemoteParticipant[] | undefined;
   className?: string;
 }
 
-export function AgentActionPanel({ localParticipant, className }: AgentActionPanelProps) {
+export function AgentActionPanel({
+  localParticipant,
+  remoteParticipants,
+  className,
+}: AgentActionPanelProps) {
   const [selectedAction, setSelectedAction] = useState<'HELLO' | 'HUMAN_AGENT_HANDOFF'>('HELLO');
   const [isLoading, setIsLoading] = useState(false);
 
   async function sendAction(action: 'HELLO' | 'HUMAN_AGENT_HANDOFF') {
-    if (!localParticipant) {
-      console.warn('No local participant available');
+    if (!remoteParticipants || !localParticipant) {
       return;
     }
 
     setIsLoading(true);
 
     try {
+      // Find agent from remote participants
+      const agent = remoteParticipants.find(
+        (participant: RemoteParticipant) => participant.isAgent
+      );
+      if (!agent) {
+        console.warn('No agent found');
+        return;
+      }
+
       // Create the payload with action and empty params
       const payload = {
         action: action,
         params: {},
       };
 
-      // Convert payload to string
-      const message = JSON.stringify(payload);
-
-      // Use LiveKit's sendText method with hardcoded topic
-      const options: SendTextOptions = {
-        topic: 'agent.rpc',
-      };
-
+      const response = await localParticipant.performRpc({
+        destinationIdentity: agent.identity,
+        method: action,
+        payload: JSON.stringify(payload.params),
+      });
       // The sendText method returns a Promise<TextStreamInfo>
-      const streamInfo = await localParticipant.sendText(message, options);
-      console.log(`Action ${action} sent with stream ID:`, streamInfo.id);
+      // const streamInfo = await localParticipant.sendText(message, options);
+      // console.log(`Action ${action} sent with stream ID:`, streamInfo.id);
+      console.log(`Action ${action} sent with response:`, response);
     } catch (error) {
       console.error('Failed to send action:', error);
     } finally {

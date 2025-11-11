@@ -6,6 +6,9 @@ import {
   type AgentState,
   type ReceivedChatMessage,
   useLocalParticipant,
+  useParticipants,
+  useRemoteParticipant,
+  useRemoteParticipants,
   useRoomContext,
   useVoiceAssistant,
 } from '@livekit/components-react';
@@ -50,6 +53,7 @@ export const SessionView = ({
   const { messages, send } = useChatAndTranscription();
   const room = useRoomContext();
   const { localParticipant } = useLocalParticipant();
+  const remoteParticipants = useRemoteParticipants();
 
   useDebugMode({
     enabled: process.env.NODE_ENV !== 'production',
@@ -90,6 +94,7 @@ export const SessionView = ({
           appConfig={appConfig}
           connectionData={connectionData}
           localParticipant={localParticipant}
+          remoteParticipants={remoteParticipants}
           onCollapseChange={setSidebarCollapsed}
         />
       )}
