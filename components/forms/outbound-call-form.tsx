@@ -127,7 +127,6 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
 
   // Handle copying SIP form URL to clipboard
   const handleCopySipUrl = async () => {
-    const sipRoomName = getSipRoomName();
     const urlParams: SipCallUrlParameters = {
       sip_from: sipNumber.trim(),
       sip_to: sipCallTo.trim(),
@@ -188,12 +187,15 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
           <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
             SIP Trunk ID <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
+          <select
             value={sipTrunkId}
-            disabled
-            className="border-primary/50 focus:ring-primary bg-primary/10 w-full cursor-not-allowed rounded-full border bg-gray-200 px-4 py-2 text-gray-500 focus:border-transparent focus:ring-2 focus:outline-none"
-          />
+            onChange={(e) => setSipTrunkId(e.target.value)}
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+            required
+          >
+            <option value="ST_oMiP56KcpVuL">ST_oMiP56KcpVuL (Twilio)</option>
+            <option value="ST_ow2MxH69NxoS">ST_ow2MxH69NxoS (NT)</option>
+          </select>
         </div>
 
         <div>
