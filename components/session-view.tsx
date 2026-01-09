@@ -20,7 +20,7 @@ import { MediaTiles } from '@/components/livekit/media-tiles';
 import { Sidebar } from '@/components/livekit/sidebar';
 import useChatAndTranscription from '@/hooks/useChatAndTranscription';
 import { useDebugMode } from '@/hooks/useDebug';
-import type { AppConfig } from '@/lib/types';
+import type { AppConfig, LiveKitEnvironment } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 function isAgentAvailable(agentState: AgentState) {
@@ -35,6 +35,7 @@ interface SessionViewProps {
     destinationPhoneNumber: string;
     participantName: string;
     participantType: 'user' | 'human_agent';
+    environment: LiveKitEnvironment;
   };
   disabled: boolean;
   sessionStarted: boolean;

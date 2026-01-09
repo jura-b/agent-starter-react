@@ -1,7 +1,11 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { InboundCallForm } from '@/components/forms/inbound-call-form';
 import { OutboundCallForm } from '@/components/forms/outbound-call-form';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
-import type { AppConfig } from '@/lib/types';
+import type { AppConfig, LiveKitEnvironment } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 interface WelcomeProps {
@@ -13,6 +17,7 @@ interface WelcomeProps {
     destinationPhoneNumber: string;
     participantName: string;
     participantType: 'user' | 'human_agent';
+    environment: LiveKitEnvironment;
   }) => void;
   appConfig: AppConfig;
 }
@@ -24,6 +29,36 @@ export const Welcome = ({
   appConfig,
   ref,
 }: React.ComponentProps<'div'> & WelcomeProps) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [selectedEnvironment, setSelectedEnvironment] = useState<LiveKitEnvironment>('DEV');
+
+  // Load environment from URL on mount
+  useEffect(() => {
+    const envParam = searchParams.get('env');
+    if (envParam === 'PRD' || envParam === 'DEV') {
+      setSelectedEnvironment(envParam);
+    }
+  }, [searchParams]);
+
+  // Update URL when environment changes
+  const handleEnvironmentChange = (env: LiveKitEnvironment) => {
+    setSelectedEnvironment(env);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('env', env);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  const handleStartCall = (data: {
+    roomName: string;
+    fromPhoneNumber: string;
+    destinationPhoneNumber: string;
+    participantName: string;
+    participantType: 'user' | 'human_agent';
+  }) => {
+    onStartCall({ ...data, environment: selectedEnvironment });
+  };
+
   return (
     <section
       ref={ref}
@@ -33,7 +68,10 @@ export const Welcome = ({
         disabled ? 'z-10' : 'z-20'
       )}
     >
-      <ConfigPanelStandalone appConfig={appConfig} />
+      <ConfigPanelStandalone
+        selectedEnvironment={selectedEnvironment}
+        onEnvironmentChange={handleEnvironmentChange}
+      />
       <svg
         width="64"
         height="64"
@@ -55,12 +93,19 @@ export const Welcome = ({
       <div className="mt-6 flex w-full max-w-6xl">
         {/* Left Column - Inbound Call Form */}
         <div className="w-1/2 flex-1 justify-items-start border-r border-gray-600">
-          <InboundCallForm startButtonText={startButtonText} onStartCall={onStartCall} />
+          <InboundCallForm
+            startButtonText={startButtonText}
+            onStartCall={handleStartCall}
+            selectedEnvironment={selectedEnvironment}
+          />
         </div>
 
         {/* Right Column - Outbound Call Form */}
         <div className="w-1/2 flex-1 justify-items-end">
-          <OutboundCallForm onStartCall={onStartCall} />
+          <OutboundCallForm
+            onStartCall={handleStartCall}
+            selectedEnvironment={selectedEnvironment}
+          />
         </div>
       </div>
 

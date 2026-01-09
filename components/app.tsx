@@ -9,7 +9,7 @@ import { SessionView } from '@/components/session-view';
 import { Toaster } from '@/components/ui/sonner';
 import { Welcome } from '@/components/welcome';
 import useConnectionDetails from '@/hooks/useConnectionDetails';
-import type { AppConfig } from '@/lib/types';
+import type { AppConfig, LiveKitEnvironment } from '@/lib/types';
 
 const MotionWelcome = motion.create(Welcome);
 const MotionSessionView = motion.create(SessionView);
@@ -28,6 +28,7 @@ export function App({ appConfig }: AppProps) {
         destinationPhoneNumber: string;
         participantName: string;
         participantType: 'user' | 'human_agent';
+        environment: LiveKitEnvironment;
       }
     | undefined
   >(undefined);

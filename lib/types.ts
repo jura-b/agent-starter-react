@@ -6,6 +6,7 @@ export interface CombinedTranscription extends TranscriptionSegment {
   receivedAt: number;
 }
 export type ThemeMode = 'dark' | 'light' | 'system';
+export type LiveKitEnvironment = 'PRD' | 'DEV';
 
 export interface AppConfig {
   pageTitle: string;

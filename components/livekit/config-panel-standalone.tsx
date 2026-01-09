@@ -1,14 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
-import type { AppConfig } from '@/lib/types';
+import React, { useEffect, useState } from 'react';
+import type { LiveKitEnvironment } from '@/lib/types';
 
 interface ConfigPanelStandaloneProps {
-  appConfig: AppConfig;
+  selectedEnvironment: LiveKitEnvironment;
+  onEnvironmentChange: (env: LiveKitEnvironment) => void;
 }
 
-export const ConfigPanelStandalone = ({ appConfig }: ConfigPanelStandaloneProps) => {
+interface EnvConfig {
+  livekitUrl: string;
+  maskedLivekitApiKey: string;
+  agentName: string;
+}
+
+export const ConfigPanelStandalone = ({
+  selectedEnvironment,
+  onEnvironmentChange,
+}: ConfigPanelStandaloneProps) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [envConfig, setEnvConfig] = useState<EnvConfig | null>(null);
+
+  useEffect(() => {
+    const fetchEnvConfig = async () => {
+      try {
+        const res = await fetch(`/api/env-config?env=${selectedEnvironment}`);
+        const data = await res.json();
+        setEnvConfig(data);
+      } catch (error) {
+        console.error('Failed to fetch env config:', error);
+      }
+    };
+    fetchEnvConfig();
+  }, [selectedEnvironment]);
 
   return (
     <div className="fixed top-4 right-4 z-10 min-w-[280px] rounded-lg border border-gray-700 bg-gray-900/90 text-left backdrop-blur-sm">
@@ -31,11 +55,25 @@ export const ConfigPanelStandalone = ({ appConfig }: ConfigPanelStandaloneProps)
       {/* Collapsible content */}
       {!isCollapsed && (
         <div className="space-y-2 px-4 pb-4 text-xs">
-          {/* LiveKit URL */}
+          {/* Environment Selector */}
           <div className="flex flex-col space-y-1">
+            <span className="text-gray-400">Environment:</span>
+            <select
+              value={selectedEnvironment}
+              onChange={(e) => onEnvironmentChange(e.target.value as LiveKitEnvironment)}
+              onClick={(e) => e.stopPropagation()}
+              className="rounded border border-gray-600 bg-gray-800 px-2 py-1 text-xs text-gray-200 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="DEV">Development</option>
+              <option value="PRD">Production</option>
+            </select>
+          </div>
+
+          {/* LiveKit URL */}
+          <div className="flex flex-col space-y-1 border-t border-gray-700/50 pt-2">
             <span className="text-gray-400">LiveKit URL:</span>
             <span className="font-mono text-[10px] break-all text-gray-300">
-              {appConfig.livekitUrl || 'Not configured'}
+              {envConfig?.livekitUrl || 'Loading...'}
             </span>
           </div>
 
@@ -43,7 +81,7 @@ export const ConfigPanelStandalone = ({ appConfig }: ConfigPanelStandaloneProps)
           <div className="flex flex-col space-y-1 border-t border-gray-700/50 pt-2">
             <span className="text-gray-400">LiveKit API Key:</span>
             <span className="font-mono text-[10px] text-gray-300">
-              {appConfig.maskedLivekitApiKey || 'Not configured'}
+              {envConfig?.maskedLivekitApiKey || 'Loading...'}
             </span>
           </div>
 
@@ -51,7 +89,7 @@ export const ConfigPanelStandalone = ({ appConfig }: ConfigPanelStandaloneProps)
           <div className="flex flex-col space-y-1 border-t border-gray-700/50 pt-2">
             <span className="text-gray-400">Agent Name:</span>
             <span className="font-mono text-[10px] text-gray-300">
-              {appConfig.agentName || 'Not configured'}
+              {envConfig?.agentName || 'Loading...'}
             </span>
           </div>
         </div>
