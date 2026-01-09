@@ -2,25 +2,36 @@ import { NextResponse } from 'next/server';
 import { AgentDispatchClient, SipClient } from 'livekit-server-sdk';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
-const API_KEY = process.env.LIVEKIT_API_KEY;
-const API_SECRET = process.env.LIVEKIT_API_SECRET;
-const LIVEKIT_URL = process.env.LIVEKIT_URL;
+type LiveKitEnvironment = 'PRD' | 'DEV';
+
+function getEnvironmentConfig(env: LiveKitEnvironment) {
+  const prefix = env;
+  return {
+    apiKey: process.env[`${prefix}_LIVEKIT_API_KEY`],
+    apiSecret: process.env[`${prefix}_LIVEKIT_API_SECRET`],
+    url: process.env[`${prefix}_LIVEKIT_URL`],
+    agentName: process.env[`${prefix}_AGENT_NAME`],
+  };
+}
 
 export const revalidate = 0;
 
 export async function POST(req: Request) {
   try {
-    if (LIVEKIT_URL === undefined) {
-      throw new Error('LIVEKIT_URL is not defined');
+    const body = await req.json();
+    const environment: LiveKitEnvironment = body?.environment || 'DEV';
+    const { apiKey, apiSecret, url, agentName } = getEnvironmentConfig(environment);
+
+    if (url === undefined) {
+      throw new Error(`${environment}_LIVEKIT_URL is not defined`);
     }
-    if (API_KEY === undefined) {
-      throw new Error('LIVEKIT_API_KEY is not defined');
+    if (apiKey === undefined) {
+      throw new Error(`${environment}_LIVEKIT_API_KEY is not defined`);
     }
-    if (API_SECRET === undefined) {
-      throw new Error('LIVEKIT_API_SECRET is not defined');
+    if (apiSecret === undefined) {
+      throw new Error(`${environment}_LIVEKIT_API_SECRET is not defined`);
     }
 
-    const body = await req.json();
     const { sip_number, sip_trunk_id, sip_call_to, room_name, wait_until_answered = true } = body;
 
     // Validate required fields
@@ -40,7 +51,7 @@ export async function POST(req: Request) {
     const participantIdentity = `${userParticipantName.toLowerCase().replaceAll(' ', '_')}_${randomNumber}`;
 
     // Initialize SIPClient
-    const sipClient = new SipClient(LIVEKIT_URL, API_KEY, API_SECRET);
+    const sipClient = new SipClient(url, apiKey, apiSecret);
 
     // Create SIP participant
     const sipParticipant = await sipClient.createSipParticipant(
@@ -63,8 +74,8 @@ export async function POST(req: Request) {
     );
 
     // Initialize AgentDispatchClient and dispatch agent to the same room
-    const dispatchClient = new AgentDispatchClient(LIVEKIT_URL, API_KEY, API_SECRET);
-    const dispatch = await dispatchClient.createDispatch(room_name, 'zai-agent');
+    const dispatchClient = new AgentDispatchClient(url, apiKey, apiSecret);
+    const dispatch = agentName ? await dispatchClient.createDispatch(room_name, agentName) : null;
 
     const headers = new Headers({
       'Cache-Control': 'no-store',

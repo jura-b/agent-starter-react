@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import type { LocalParticipant, RemoteParticipant } from 'livekit-client';
-import type { AppConfig } from '@/lib/types';
+import type { AppConfig, LiveKitEnvironment } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { AgentActionPanel } from './agent-action-panel';
 import { ConfigPanel } from './config-panel';
@@ -19,6 +19,7 @@ interface SidebarProps {
     destinationPhoneNumber: string;
     participantName: string;
     participantType: 'user' | 'human_agent';
+    environment: LiveKitEnvironment;
   };
   localParticipant: LocalParticipant | undefined;
   remoteParticipants: RemoteParticipant[] | undefined;
@@ -101,7 +102,7 @@ export function Sidebar({
             <PhoneNumpad localParticipant={localParticipant} />
             <hr className="border-gray-700" />
             {/* Configuration Panel */}
-            <ConfigPanel appConfig={appConfig} />
+            <ConfigPanel environment={connectionData?.environment || 'DEV'} />
             <br />
             <br />
           </div>

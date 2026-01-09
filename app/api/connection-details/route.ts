@@ -3,10 +3,17 @@ import { AccessToken, type AccessTokenOptions, type VideoGrant } from 'livekit-s
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 import { RoomConfiguration } from '@livekit/protocol';
 
-// NOTE: you are expected to define the following environment variables in `.env.local`:
-const API_KEY = process.env.LIVEKIT_API_KEY;
-const API_SECRET = process.env.LIVEKIT_API_SECRET;
-const LIVEKIT_URL = process.env.LIVEKIT_URL;
+export type LiveKitEnvironment = 'PRD' | 'DEV';
+
+function getEnvironmentConfig(env: LiveKitEnvironment) {
+  const prefix = env;
+  return {
+    apiKey: process.env[`${prefix}_LIVEKIT_API_KEY`],
+    apiSecret: process.env[`${prefix}_LIVEKIT_API_SECRET`],
+    url: process.env[`${prefix}_LIVEKIT_URL`],
+    agentName: process.env[`${prefix}_AGENT_NAME`],
+  };
+}
 
 // don't cache the results
 export const revalidate = 0;
@@ -21,19 +28,24 @@ export type ConnectionDetails = {
 
 export async function POST(req: Request) {
   try {
-    if (LIVEKIT_URL === undefined) {
-      throw new Error('LIVEKIT_URL is not defined');
-    }
-    if (API_KEY === undefined) {
-      throw new Error('LIVEKIT_API_KEY is not defined');
-    }
-    if (API_SECRET === undefined) {
-      throw new Error('LIVEKIT_API_SECRET is not defined');
-    }
-
     // Parse agent configuration, room name and phone numbers from request body
     const body = await req.json();
-    const agentName: string = body?.room_config?.agents?.[0]?.agent_name;
+    const environment: LiveKitEnvironment = body?.environment || 'DEV';
+    const { apiKey, apiSecret, url, agentName: envAgentName } = getEnvironmentConfig(environment);
+
+    if (url === undefined) {
+      throw new Error(`${environment}_LIVEKIT_URL is not defined`);
+    }
+    if (apiKey === undefined) {
+      throw new Error(`${environment}_LIVEKIT_API_KEY is not defined`);
+    }
+    if (apiSecret === undefined) {
+      throw new Error(`${environment}_LIVEKIT_API_SECRET is not defined`);
+    }
+
+    // Use agent name from request body, or fall back to environment-specific agent name
+    const agentName: string | undefined =
+      body?.room_config?.agents?.[0]?.agent_name || envAgentName;
     const customRoomName: string = body?.room_name;
     const fromPhoneNumber: string = body?.from_phone_number || '';
     const participantType: 'user' | 'human_agent' = body?.participant_type;
@@ -66,12 +78,14 @@ export async function POST(req: Request) {
         ttl: '60m',
       },
       roomName,
-      agentName
+      agentName,
+      apiKey,
+      apiSecret
     );
 
     // Return connection details
     const data: ConnectionDetails = {
-      serverUrl: LIVEKIT_URL,
+      serverUrl: url,
       roomName,
       participantToken: participantToken,
       participantName,
@@ -92,9 +106,11 @@ export async function POST(req: Request) {
 function createParticipantToken(
   userInfo: AccessTokenOptions,
   roomName: string,
-  agentName?: string
+  agentName: string | undefined,
+  apiKey: string,
+  apiSecret: string
 ): Promise<string> {
-  const at = new AccessToken(API_KEY, API_SECRET, userInfo);
+  const at = new AccessToken(apiKey, apiSecret, userInfo);
 
   const grant: VideoGrant = {
     room: roomName,

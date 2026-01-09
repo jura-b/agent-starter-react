@@ -20,12 +20,18 @@ import { MediaTiles } from '@/components/livekit/media-tiles';
 import { Sidebar } from '@/components/livekit/sidebar';
 import useChatAndTranscription from '@/hooks/useChatAndTranscription';
 import { useDebugMode } from '@/hooks/useDebug';
-import type { AppConfig } from '@/lib/types';
+import type { AppConfig, LiveKitEnvironment } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 function isAgentAvailable(agentState: AgentState) {
   return agentState == 'listening' || agentState == 'thinking' || agentState == 'speaking';
 }
+
+// Environment-specific accent colors
+const ENV_ACCENT_COLORS = {
+  DEV: { light: '#1fd5f9', dark: '#1fd5f9' }, // Blue/Aqua for DEV
+  PRD: { light: '#f97316', dark: '#fb923c' }, // Orange for PRD
+};
 
 interface SessionViewProps {
   appConfig: AppConfig;
@@ -35,6 +41,7 @@ interface SessionViewProps {
     destinationPhoneNumber: string;
     participantName: string;
     participantType: 'user' | 'human_agent';
+    environment: LiveKitEnvironment;
   };
   disabled: boolean;
   sessionStarted: boolean;
@@ -58,6 +65,26 @@ export const SessionView = ({
   useDebugMode({
     enabled: process.env.NODE_ENV !== 'production',
   });
+
+  // Apply accent colors based on environment
+  useEffect(() => {
+    const env = connectionData?.environment || 'DEV';
+    const colors = ENV_ACCENT_COLORS[env];
+    const root = document.documentElement;
+    root.style.setProperty('--primary', colors.light);
+    root.style.setProperty('--primary-hover', `color-mix(in srgb, ${colors.light} 80%, #000)`);
+
+    // Also set dark mode colors
+    const darkStyle = document.getElementById('env-dark-style');
+    if (darkStyle) {
+      darkStyle.textContent = `.dark { --primary: ${colors.dark}; --primary-hover: color-mix(in srgb, ${colors.dark} 80%, #000); }`;
+    } else {
+      const style = document.createElement('style');
+      style.id = 'env-dark-style';
+      style.textContent = `.dark { --primary: ${colors.dark}; --primary-hover: color-mix(in srgb, ${colors.dark} 80%, #000); }`;
+      document.head.appendChild(style);
+    }
+  }, [connectionData?.environment]);
 
   async function handleSendMessage(message: string) {
     await send(message);
@@ -97,6 +124,18 @@ export const SessionView = ({
           remoteParticipants={remoteParticipants}
           onCollapseChange={setSidebarCollapsed}
         />
+      )}
+
+      {/* Environment Badge - floating top right */}
+      {sessionStarted && (
+        <div
+          className="fixed top-4 right-4 z-50 rounded-full px-8 py-3 text-xl font-semibold text-white shadow-lg"
+          style={{
+            backgroundColor: ENV_ACCENT_COLORS[connectionData?.environment || 'DEV'].light,
+          }}
+        >
+          {connectionData?.environment === 'PRD' ? 'Production' : 'Development'}
+        </div>
       )}
 
       {/* Main content section */}

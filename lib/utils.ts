@@ -18,12 +18,14 @@ export interface SimulatedCallUrlParameters {
   to: string;
   suffix?: string;
   type: 'user' | 'human_agent';
+  env?: 'PRD' | 'DEV';
 }
 
 export interface SipCallUrlParameters {
   sip_from: string;
   sip_to: string;
   sip_trunk: string;
+  env?: 'PRD' | 'DEV';
 }
 
 /**
@@ -50,6 +52,11 @@ export function buildSimulatedCallUrl(
     searchParams.set('suffix', params.suffix.trim());
   }
 
+  // Add environment if provided
+  if (params.env) {
+    searchParams.set('env', params.env);
+  }
+
   const urlOrigin = origin || (typeof window !== 'undefined' ? window.location.origin : '');
   const urlPathname = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
 
@@ -74,6 +81,11 @@ export function buildSipCallUrl(
   searchParams.set('sip_from', params.sip_from.trim());
   searchParams.set('sip_to', params.sip_to.trim());
   searchParams.set('sip_trunk', params.sip_trunk.trim());
+
+  // Add environment if provided
+  if (params.env) {
+    searchParams.set('env', params.env);
+  }
 
   const urlOrigin = origin || (typeof window !== 'undefined' ? window.location.origin : '');
   const urlPathname = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { decodeJwt } from 'jose';
 import { ConnectionDetails } from '@/app/api/connection-details/route';
-import { AppConfig } from '@/lib/types';
+import { AppConfig, LiveKitEnvironment } from '@/lib/types';
 
 const ONE_MINUTE_IN_MILLISECONDS = 60 * 1000;
 
@@ -24,6 +24,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
       destinationPhoneNumber: string;
       participantName?: string;
       participantType?: 'user' | 'human_agent';
+      environment?: LiveKitEnvironment;
     }) => {
       setConnectionDetails(null);
       const url = new URL(
@@ -46,11 +47,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
             destination_phone_number: connectionData?.destinationPhoneNumber,
             participant_name: connectionData?.participantName,
             participant_type: connectionData?.participantType,
-            room_config: appConfig.agentName
-              ? {
-                  agents: [{ agent_name: appConfig.agentName }],
-                }
-              : undefined,
+            environment: connectionData?.environment || 'DEV',
           }),
         });
         data = await res.json();
@@ -87,6 +84,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
       fromPhoneNumber: string;
       destinationPhoneNumber: string;
       participantName?: string;
+      environment?: LiveKitEnvironment;
     }) => {
       if (isConnectionDetailsExpired() || !connectionDetails) {
         return fetchConnectionDetails(connectionData);

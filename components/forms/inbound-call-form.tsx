@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { DiceFiveIcon, DiceTwoIcon, KeyReturnIcon, ShareNetworkIcon } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
+import type { LiveKitEnvironment } from '@/lib/types';
 import { type SimulatedCallUrlParameters, buildSimulatedCallUrl } from '@/lib/utils';
 
 interface InboundCallFormProps {
@@ -16,9 +17,14 @@ interface InboundCallFormProps {
     participantName: string;
     participantType: 'user' | 'human_agent';
   }) => void;
+  selectedEnvironment: LiveKitEnvironment;
 }
 
-export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFormProps) => {
+export const InboundCallForm = ({
+  startButtonText,
+  onStartCall,
+  selectedEnvironment,
+}: InboundCallFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -47,6 +53,7 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
       to: destinationPhoneNumber.trim(),
       type: participantType,
       suffix: suffix.trim() || undefined,
+      env: selectedEnvironment,
     };
 
     return buildSimulatedCallUrl(urlParams);
@@ -131,12 +138,20 @@ export const InboundCallForm = ({ startButtonText, onStartCall }: InboundCallFor
         to: destinationPhoneNumber.trim(),
         type: participantType,
         suffix: suffix.trim() || undefined,
+        env: selectedEnvironment,
       };
 
       const newUrl = buildSimulatedCallUrl(urlParams);
       router.replace(newUrl, { scroll: false });
     }
-  }, [fromPhoneNumber, destinationPhoneNumber, suffix, participantType, router]);
+  }, [
+    fromPhoneNumber,
+    destinationPhoneNumber,
+    suffix,
+    participantType,
+    selectedEnvironment,
+    router,
+  ]);
 
   // Construct room name for preview
   const getRoomName = (overwrittenSuffix?: string) => {

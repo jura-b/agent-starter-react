@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { KeyReturnIcon, ShareNetworkIcon } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
+import type { LiveKitEnvironment } from '@/lib/types';
 import { type SipCallUrlParameters, buildSipCallUrl } from '@/lib/utils';
 
 interface OutboundCallFormProps {
@@ -15,9 +16,10 @@ interface OutboundCallFormProps {
     participantName: string;
     participantType: 'user' | 'human_agent';
   }) => void;
+  selectedEnvironment: LiveKitEnvironment;
 }
 
-export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
+export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundCallFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -82,6 +84,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
           sip_call_to: sipCallTo.trim(),
           room_name: generatedRoomName,
           wait_until_answered: true,
+          environment: selectedEnvironment,
         }),
       });
 
@@ -131,6 +134,7 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
       sip_from: sipNumber.trim(),
       sip_to: sipCallTo.trim(),
       sip_trunk: sipTrunkId.trim(),
+      env: selectedEnvironment,
     };
 
     const shareableUrl = buildSipCallUrl(urlParams);
@@ -157,12 +161,13 @@ export const OutboundCallForm = ({ onStartCall }: OutboundCallFormProps) => {
         sip_from: sipNumber.trim(),
         sip_to: sipCallTo.trim(),
         sip_trunk: sipTrunkId.trim(),
+        env: selectedEnvironment,
       };
 
       const newUrl = buildSipCallUrl(sipUrlParams);
       router.replace(newUrl, { scroll: false });
     }
-  }, [sipNumber, sipCallTo, sipTrunkId, router]);
+  }, [sipNumber, sipCallTo, sipTrunkId, selectedEnvironment, router]);
 
   return (
     <div className="w-full max-w-120 space-y-4 px-8">
