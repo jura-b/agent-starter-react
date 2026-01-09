@@ -5,8 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { InboundCallForm } from '@/components/forms/inbound-call-form';
 import { OutboundCallForm } from '@/components/forms/outbound-call-form';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
-import type { AppConfig, LiveKitEnvironment } from '@/lib/types';
+import type { LiveKitEnvironment } from '@/lib/types';
 import { cn } from '@/lib/utils';
+
+// Environment-specific accent colors
+const ENV_ACCENT_COLORS = {
+  DEV: { light: '#1fd5f9', dark: '#1fd5f9' }, // Blue/Aqua for DEV
+  PRD: { light: '#f97316', dark: '#fb923c' }, // Orange for PRD
+};
 
 interface WelcomeProps {
   disabled: boolean;
@@ -19,14 +25,12 @@ interface WelcomeProps {
     participantType: 'user' | 'human_agent';
     environment: LiveKitEnvironment;
   }) => void;
-  appConfig: AppConfig;
 }
 
 export const Welcome = ({
   disabled,
   startButtonText,
   onStartCall,
-  appConfig,
   ref,
 }: React.ComponentProps<'div'> & WelcomeProps) => {
   const searchParams = useSearchParams();
@@ -40,6 +44,25 @@ export const Welcome = ({
       setSelectedEnvironment(envParam);
     }
   }, [searchParams]);
+
+  // Update accent colors based on environment
+  useEffect(() => {
+    const colors = ENV_ACCENT_COLORS[selectedEnvironment];
+    const root = document.documentElement;
+    root.style.setProperty('--primary', colors.light);
+    root.style.setProperty('--primary-hover', `color-mix(in srgb, ${colors.light} 80%, #000)`);
+
+    // Also set dark mode colors
+    const darkStyle = document.getElementById('env-dark-style');
+    if (darkStyle) {
+      darkStyle.textContent = `.dark { --primary: ${colors.dark}; --primary-hover: color-mix(in srgb, ${colors.dark} 80%, #000); }`;
+    } else {
+      const style = document.createElement('style');
+      style.id = 'env-dark-style';
+      style.textContent = `.dark { --primary: ${colors.dark}; --primary-hover: color-mix(in srgb, ${colors.dark} 80%, #000); }`;
+      document.head.appendChild(style);
+    }
+  }, [selectedEnvironment]);
 
   // Update URL when environment changes
   const handleEnvironmentChange = (env: LiveKitEnvironment) => {

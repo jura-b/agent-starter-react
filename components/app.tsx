@@ -98,7 +98,6 @@ export function App({ appConfig }: AppProps) {
       <MotionWelcome
         key="welcome"
         startButtonText={startButtonText}
-        appConfig={appConfig}
         onStartCall={(data) => {
           setConnectionData(data);
           setSessionStarted(true);
