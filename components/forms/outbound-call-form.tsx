@@ -181,8 +181,7 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
   // Update URL when SIP form values change (but not on initial mount)
   useEffect(() => {
     // Skip on initial mount to avoid overriding URL parameters
-    const hasSipUserInteracted =
-      sipNumber !== '+66' || sipCallTo !== '' || sipTrunkId !== '';
+    const hasSipUserInteracted = sipNumber !== '+66' || sipCallTo !== '' || sipTrunkId !== '';
 
     if (hasSipUserInteracted) {
       const sipUrlParams: SipCallUrlParameters = {
@@ -226,14 +225,14 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
             className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           >
-            <option value="" selected>Select SIP Trunk</option>
-            {
-              trunkList.map((trunk) => (
-                <option key={trunk.id} value={trunk.id}>
-                  {trunk.name} ({trunk.id})
-                </option>
-              ))
-            }
+            <option value="" selected>
+              Select SIP Trunk
+            </option>
+            {trunkList.map((trunk) => (
+              <option key={trunk.id} value={trunk.id}>
+                {trunk.name} ({trunk.id})
+              </option>
+            ))}
           </select>
         </div>
 

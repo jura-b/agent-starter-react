@@ -14,7 +14,7 @@ interface EnvironmentBadgeProps {
 export const EnvironmentBadge = ({ environment }: EnvironmentBadgeProps) => {
   return (
     <div
-      className="fixed top-4 right-4 z-50 rounded-lg px-4 py-2 text-lg font-semibold font-mono text-black shadow-lg animate-pulse"
+      className="fixed top-4 right-4 z-50 animate-pulse rounded-lg px-4 py-2 font-mono text-lg font-semibold text-black shadow-lg"
       style={{
         backgroundColor: ENV_ACCENT_COLORS[environment].light,
       }}
