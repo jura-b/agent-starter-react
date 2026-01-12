@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { EnvironmentBadge } from '@/components/environment-badge';
 import { InboundCallForm } from '@/components/forms/inbound-call-form';
 import { OutboundCallForm } from '@/components/forms/outbound-call-form';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
@@ -91,6 +92,7 @@ export const Welcome = ({
         disabled ? 'z-10' : 'z-20'
       )}
     >
+      <EnvironmentBadge environment={selectedEnvironment} />
       <ConfigPanelStandalone
         selectedEnvironment={selectedEnvironment}
         onEnvironmentChange={handleEnvironmentChange}

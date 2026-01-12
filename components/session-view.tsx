@@ -13,6 +13,7 @@ import {
   useVoiceAssistant,
 } from '@livekit/components-react';
 import { toastAlert } from '@/components/alert-toast';
+import { EnvironmentBadge } from '@/components/environment-badge';
 import { AgentControlBar } from '@/components/livekit/agent-control-bar/agent-control-bar';
 import { ChatEntry } from '@/components/livekit/chat/chat-entry';
 import { ChatMessageView } from '@/components/livekit/chat/chat-message-view';
@@ -127,16 +128,7 @@ export const SessionView = ({
       )}
 
       {/* Environment Badge - floating top right */}
-      {sessionStarted && (
-        <div
-          className="fixed top-4 right-4 z-50 rounded-full px-8 py-3 text-xl font-semibold text-white shadow-lg"
-          style={{
-            backgroundColor: ENV_ACCENT_COLORS[connectionData?.environment || 'DEV'].light,
-          }}
-        >
-          {connectionData?.environment === 'PRD' ? 'Production' : 'Development'}
-        </div>
-      )}
+      {sessionStarted && <EnvironmentBadge environment={connectionData?.environment || 'DEV'} />}
 
       {/* Main content section */}
       <section

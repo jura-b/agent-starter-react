@@ -35,7 +35,7 @@ export const ConfigPanelStandalone = ({
   }, [selectedEnvironment]);
 
   return (
-    <div className="fixed top-4 right-4 z-10 min-w-[280px] rounded-lg border border-gray-700 bg-gray-900/90 text-left backdrop-blur-sm">
+    <div className="fixed top-4 left-4 z-10 min-w-[280px] rounded-lg border border-gray-700 bg-gray-900/90 text-left backdrop-blur-sm">
       {/* Header - Always visible */}
       <div
         className="flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-gray-800/50"
