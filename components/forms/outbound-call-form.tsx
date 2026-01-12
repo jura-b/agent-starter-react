@@ -8,6 +8,11 @@ import { Button } from '@/components/ui/button';
 import type { LiveKitEnvironment } from '@/lib/types';
 import { type SipCallUrlParameters, buildSipCallUrl } from '@/lib/utils';
 
+interface TrunkOption {
+  id: string;
+  name: string;
+}
+
 interface OutboundCallFormProps {
   onStartCall: (data: {
     roomName: string;
@@ -24,11 +29,34 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
   const router = useRouter();
 
   // SIP form state variables
-  const [sipNumber, setSipNumber] = useState('+6625440004');
-  const [sipTrunkId, setSipTrunkId] = useState('ST_oMiP56KcpVuL');
-  const [sipCallTo, setSipCallTo] = useState('+66');
+  const [sipNumber, setSipNumber] = useState('');
+  const [sipTrunkId, setSipTrunkId] = useState('');
+  const [sipCallTo, setSipCallTo] = useState('');
   const [shouldJoinAsHumanAgent, setShouldJoinAsHumanAgent] = useState(true);
   const [isSipCallLoading, setIsSipCallLoading] = useState(false);
+  const [trunkList, setTrunkList] = useState<TrunkOption[]>([]);
+
+  // Fetch trunk list when environment changes
+  useEffect(() => {
+    const fetchTrunkList = async () => {
+      try {
+        const response = await fetch(`/api/trunk-list?env=${selectedEnvironment}`);
+        const data: TrunkOption[] = await response.json();
+        setTrunkList(data);
+        // Set default to first trunk if available
+        if (data.length > 0) {
+          setSipTrunkId(data[0].id);
+        } else {
+          setSipTrunkId('');
+        }
+      } catch (error) {
+        console.error('Failed to fetch trunk list:', error);
+        setTrunkList([]);
+        setSipTrunkId('');
+      }
+    };
+    fetchTrunkList();
+  }, [selectedEnvironment]);
 
   // Load SIP form values from URL parameters on component mount
   useEffect(() => {
@@ -154,7 +182,7 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
   useEffect(() => {
     // Skip on initial mount to avoid overriding URL parameters
     const hasSipUserInteracted =
-      sipNumber !== '+6625440004' || sipCallTo !== '+66' || sipTrunkId !== 'ST_oMiP56KcpVuL';
+      sipNumber !== '+66' || sipCallTo !== '' || sipTrunkId !== '';
 
     if (hasSipUserInteracted) {
       const sipUrlParams: SipCallUrlParameters = {
@@ -198,8 +226,14 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
             className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           >
-            <option value="ST_oMiP56KcpVuL">ST_oMiP56KcpVuL (Twilio)</option>
-            <option value="ST_ow2MxH69NxoS">ST_ow2MxH69NxoS (NT)</option>
+            <option value="" selected>Select SIP Trunk</option>
+            {
+              trunkList.map((trunk) => (
+                <option key={trunk.id} value={trunk.id}>
+                  {trunk.name} ({trunk.id})
+                </option>
+              ))
+            }
           </select>
         </div>
 
