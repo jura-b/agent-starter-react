@@ -32,6 +32,8 @@ export const InboundCallForm = ({
   const [destinationPhoneNumber, setDestinationPhoneNumber] = useState('+66');
   const [suffix, setSuffix] = useState('');
   const [participantType, setParticipantType] = useState<'user' | 'human_agent'>('user');
+  const [useStaticRoomName, setUseStaticRoomName] = useState(false);
+  const [staticRoomName, setStaticRoomName] = useState('');
 
   // Load form values from URL parameters on component mount
   useEffect(() => {
@@ -39,22 +41,36 @@ export const InboundCallForm = ({
     const to = searchParams.get('to');
     const suffixParam = searchParams.get('suffix');
     const type = searchParams.get('type');
+    const roomParam = searchParams.get('room');
 
-    if (from) setFromPhoneNumber(from);
-    if (to) setDestinationPhoneNumber(to);
-    if (suffixParam) setSuffix(suffixParam);
+    if (roomParam) {
+      setUseStaticRoomName(true);
+      setStaticRoomName(roomParam);
+    } else {
+      if (from) setFromPhoneNumber(from);
+      if (to) setDestinationPhoneNumber(to);
+      if (suffixParam) setSuffix(suffixParam);
+    }
     if (type === 'human_agent') setParticipantType('human_agent');
   }, [searchParams]);
 
   // Generate shareable URL with current form values
   const generateShareableUrl = () => {
-    const urlParams: SimulatedCallUrlParameters = {
-      from: fromPhoneNumber.trim(),
-      to: destinationPhoneNumber.trim(),
-      type: participantType,
-      suffix: suffix.trim() || undefined,
-      env: selectedEnvironment,
-    };
+    const urlParams: SimulatedCallUrlParameters = useStaticRoomName
+      ? {
+          from: '',
+          to: '',
+          type: participantType,
+          room: staticRoomName.trim(),
+          env: selectedEnvironment,
+        }
+      : {
+          from: fromPhoneNumber.trim(),
+          to: destinationPhoneNumber.trim(),
+          type: participantType,
+          suffix: suffix.trim() || undefined,
+          env: selectedEnvironment,
+        };
 
     return buildSimulatedCallUrl(urlParams);
   };
@@ -126,20 +142,29 @@ export const InboundCallForm = ({
   // Update URL when form values change (but not on initial mount)
   useEffect(() => {
     // Skip on initial mount to avoid overriding URL parameters
-    const hasUserInteracted =
-      fromPhoneNumber !== '+66' ||
-      destinationPhoneNumber !== '+66' ||
-      suffix !== '' ||
-      participantType !== 'user';
+    const hasUserInteracted = useStaticRoomName
+      ? staticRoomName !== ''
+      : fromPhoneNumber !== '+66' ||
+        destinationPhoneNumber !== '+66' ||
+        suffix !== '' ||
+        participantType !== 'user';
 
     if (hasUserInteracted) {
-      const urlParams: SimulatedCallUrlParameters = {
-        from: fromPhoneNumber.trim(),
-        to: destinationPhoneNumber.trim(),
-        type: participantType,
-        suffix: suffix.trim() || undefined,
-        env: selectedEnvironment,
-      };
+      const urlParams: SimulatedCallUrlParameters = useStaticRoomName
+        ? {
+            from: '',
+            to: '',
+            type: participantType,
+            room: staticRoomName.trim(),
+            env: selectedEnvironment,
+          }
+        : {
+            from: fromPhoneNumber.trim(),
+            to: destinationPhoneNumber.trim(),
+            type: participantType,
+            suffix: suffix.trim() || undefined,
+            env: selectedEnvironment,
+          };
 
       const newUrl = buildSimulatedCallUrl(urlParams);
       router.replace(newUrl, { scroll: false });
@@ -150,11 +175,18 @@ export const InboundCallForm = ({
     suffix,
     participantType,
     selectedEnvironment,
+    useStaticRoomName,
+    staticRoomName,
     router,
   ]);
 
   // Construct room name for preview
   const getRoomName = (overwrittenSuffix?: string) => {
+    // If using static room name, return it directly
+    if (useStaticRoomName) {
+      return staticRoomName.trim();
+    }
+
     const roomParts = ['webin'];
     if (fromPhoneNumber.trim()) {
       roomParts.push(fromPhoneNumber.trim());
@@ -176,28 +208,45 @@ export const InboundCallForm = ({
     // Validate all required fields
     const roomName = getRoomName();
 
-    if (!roomName || roomName === 'webin') {
-      alert('Room name is required. Please enter phone numbers.');
-      return;
-    }
+    if (useStaticRoomName) {
+      // Validate static room name
+      if (!roomName) {
+        alert('Room name is required.');
+        return;
+      }
 
-    if (!fromPhoneNumber.trim() || fromPhoneNumber.trim() === '+66') {
-      alert('From phone number is required. Please enter a complete phone number.');
-      return;
-    }
+      onStartCall({
+        roomName,
+        fromPhoneNumber: '',
+        destinationPhoneNumber: '',
+        participantName: '',
+        participantType,
+      });
+    } else {
+      // Validate dynamic room name fields
+      if (!roomName || roomName === 'webin') {
+        alert('Room name is required. Please enter phone numbers.');
+        return;
+      }
 
-    if (!destinationPhoneNumber.trim() || destinationPhoneNumber.trim() === '+66') {
-      alert('Destination phone number is required. Please enter a complete phone number.');
-      return;
-    }
+      if (!fromPhoneNumber.trim() || fromPhoneNumber.trim() === '+66') {
+        alert('From phone number is required. Please enter a complete phone number.');
+        return;
+      }
 
-    onStartCall({
-      roomName,
-      fromPhoneNumber: fromPhoneNumber.trim(),
-      destinationPhoneNumber: destinationPhoneNumber.trim(),
-      participantName: '',
-      participantType,
-    });
+      if (!destinationPhoneNumber.trim() || destinationPhoneNumber.trim() === '+66') {
+        alert('Destination phone number is required. Please enter a complete phone number.');
+        return;
+      }
+
+      onStartCall({
+        roomName,
+        fromPhoneNumber: fromPhoneNumber.trim(),
+        destinationPhoneNumber: destinationPhoneNumber.trim(),
+        participantName: '',
+        participantType,
+      });
+    }
   };
 
   return (
@@ -205,46 +254,79 @@ export const InboundCallForm = ({
       <h3 className="text-fg1 mb-4 text-center text-lg font-medium">SIP Inbound Call</h3>
 
       <form onSubmit={handleSubmit} className="w-full space-y-3">
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-            From Phone Number <span className="text-red-500">*</span>
+        {/* Static Room Name Toggle */}
+        <div className="flex items-center justify-start pl-4">
+          <label className="flex cursor-pointer items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={useStaticRoomName}
+              onChange={(e) => setUseStaticRoomName(e.target.checked)}
+              className="accent-primary h-4 w-4 rounded"
+            />
+            <span className="text-fg1 text-sm font-medium">Use Room Name</span>
           </label>
-          <input
-            type="text"
-            value={fromPhoneNumber}
-            onChange={(e) => setFromPhoneNumber(e.target.value)}
-            placeholder="Enter from phone number"
-            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-            required
-          />
         </div>
 
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-            Destination Phone Number <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={destinationPhoneNumber}
-            onChange={(e) => setDestinationPhoneNumber(e.target.value)}
-            placeholder="Enter destination phone number"
-            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-            required
-          />
-        </div>
+        {useStaticRoomName ? (
+          /* Static Room Name Input */
+          <div>
+            <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+              Room Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={staticRoomName}
+              onChange={(e) => setStaticRoomName(e.target.value)}
+              placeholder="Enter room name"
+              className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+              required
+            />
+          </div>
+        ) : (
+          /* Dynamic Room Name Inputs */
+          <>
+            <div>
+              <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                From Phone Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={fromPhoneNumber}
+                onChange={(e) => setFromPhoneNumber(e.target.value)}
+                placeholder="Enter from phone number"
+                className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+                required
+              />
+            </div>
 
-        <div>
-          <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-            Suffix <span className="text-gray-500">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={suffix}
-            onChange={(e) => setSuffix(e.target.value)}
-            placeholder="Enter suffix"
-            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-          />
-        </div>
+            <div>
+              <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                Destination Phone Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={destinationPhoneNumber}
+                onChange={(e) => setDestinationPhoneNumber(e.target.value)}
+                placeholder="Enter destination phone number"
+                className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+                Suffix <span className="text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={suffix}
+                onChange={(e) => setSuffix(e.target.value)}
+                placeholder="Enter suffix"
+                className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+              />
+            </div>
+          </>
+        )}
 
         <div>
           <label className="text-fg1 mb-3 block pl-4 text-left text-sm font-medium">
@@ -285,20 +367,22 @@ export const InboundCallForm = ({
           {startButtonText} <KeyReturnIcon size={16} weight="fill" />
         </Button>
 
-        <Button
-          variant="secondary"
-          size="lg"
-          onClick={handleRandomSuffixAndStart}
-          className="mt-3 w-72 transform-gpu flex-row items-center justify-center font-mono text-xs text-gray-300 transition-transform hover:scale-110 hover:bg-gray-800 hover:text-white"
-        >
-          <DiceFiveIcon size={16} weight="fill" className="animate-roll2 flex" />
-          <span className="flex">Random Suffix and Start</span>
-          <DiceTwoIcon size={16} weight="fill" className="animate-roll flex" />
-        </Button>
+        {!useStaticRoomName && (
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={handleRandomSuffixAndStart}
+            className="mt-3 w-72 transform-gpu flex-row items-center justify-center font-mono text-xs text-gray-300 transition-transform hover:scale-110 hover:bg-gray-800 hover:text-white"
+          >
+            <DiceFiveIcon size={16} weight="fill" className="animate-roll2 flex" />
+            <span className="flex">Random Suffix and Start</span>
+            <DiceTwoIcon size={16} weight="fill" className="animate-roll flex" />
+          </Button>
+        )}
       </form>
 
       {/* Share URL Button */}
-      {(fromPhoneNumber || destinationPhoneNumber) && (
+      {(useStaticRoomName ? staticRoomName : fromPhoneNumber || destinationPhoneNumber) && (
         <button
           onClick={handleCopyUrl}
           className="mt-8 w-full transform-gpu cursor-pointer rounded-lg border border-gray-600 bg-gray-800/50 p-3 text-white transition-colors transition-transform hover:scale-110 hover:bg-gray-700/50 focus:ring focus:ring-blue-800/50 focus:outline-none"

@@ -19,6 +19,7 @@ export interface SimulatedCallUrlParameters {
   suffix?: string;
   type: 'user' | 'human_agent';
   env?: 'PRD' | 'DEV';
+  room?: string; // Static room name (when set, from/to/suffix are ignored)
 }
 
 export interface SipCallUrlParameters {
@@ -42,14 +43,20 @@ export function buildSimulatedCallUrl(
 ): string {
   const searchParams = new URLSearchParams();
 
-  // Add required parameters
-  searchParams.set('from', params.from.trim());
-  searchParams.set('to', params.to.trim());
-  searchParams.set('type', params.type);
+  // If static room name is provided, use that instead of from/to/suffix
+  if (params.room && params.room.trim()) {
+    searchParams.set('room', params.room.trim());
+    searchParams.set('type', params.type);
+  } else {
+    // Add required parameters
+    searchParams.set('from', params.from.trim());
+    searchParams.set('to', params.to.trim());
+    searchParams.set('type', params.type);
 
-  // Add optional suffix if provided
-  if (params.suffix && params.suffix.trim()) {
-    searchParams.set('suffix', params.suffix.trim());
+    // Add optional suffix if provided
+    if (params.suffix && params.suffix.trim()) {
+      searchParams.set('suffix', params.suffix.trim());
+    }
   }
 
   // Add environment if provided
