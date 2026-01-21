@@ -32,8 +32,8 @@ export interface AppConfig {
 
 export interface SandboxConfig {
   [key: string]:
-  | { type: 'string'; value: string }
-  | { type: 'number'; value: number }
-  | { type: 'boolean'; value: boolean }
-  | null;
+    | { type: 'string'; value: string }
+    | { type: 'number'; value: number }
+    | { type: 'boolean'; value: boolean }
+    | null;
 }

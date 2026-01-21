@@ -241,8 +241,8 @@ export function transcriptionToChatMessage(
       textStream.participantInfo.identity === room.localParticipant.identity
         ? room.localParticipant
         : Array.from(room.remoteParticipants.values()).find(
-          (p) => p.identity === textStream.participantInfo.identity
-        ),
+            (p) => p.identity === textStream.participantInfo.identity
+          ),
   };
 }
 
