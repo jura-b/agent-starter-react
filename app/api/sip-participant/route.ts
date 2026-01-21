@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { AgentDispatchClient, SipClient } from 'livekit-server-sdk';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
-type LiveKitEnvironment = 'PRD' | 'DEV';
+type LiveKitEnvironment = 'PRD' | 'DEV' | 'DEV_BP' | 'PRD_BP' | 'LOCAL';
 
 function getEnvironmentConfig(env: LiveKitEnvironment) {
   const prefix = env;

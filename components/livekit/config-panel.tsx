@@ -38,7 +38,7 @@ export const ConfigPanel = ({ environment }: ConfigPanelProps) => {
         <div className="flex flex-col space-y-1">
           <span className="text-gray-400">Environment:</span>
           <span className="font-mono text-[10px] font-semibold text-blue-400">
-            {environment === 'PRD' ? 'Production' : 'Development'}
+            {{ DEV: 'Development', PRD: 'Production', DEV_BP: 'Development BP', PRD_BP: 'Production BP', LOCAL: 'Local' }[environment]}
           </span>
         </div>
 

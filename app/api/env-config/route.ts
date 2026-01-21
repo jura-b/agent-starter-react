@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-type LiveKitEnvironment = 'PRD' | 'DEV';
+type LiveKitEnvironment = 'PRD' | 'DEV' | 'DEV_BP' | 'PRD_BP' | 'LOCAL';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

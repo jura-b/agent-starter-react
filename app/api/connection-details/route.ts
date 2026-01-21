@@ -3,7 +3,7 @@ import { AccessToken, type AccessTokenOptions, type VideoGrant } from 'livekit-s
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 import { RoomConfiguration } from '@livekit/protocol';
 
-export type LiveKitEnvironment = 'PRD' | 'DEV';
+export type LiveKitEnvironment = 'PRD' | 'DEV' | 'DEV_BP' | 'PRD_BP' | 'LOCAL';
 
 function getEnvironmentConfig(env: LiveKitEnvironment) {
   const prefix = env;

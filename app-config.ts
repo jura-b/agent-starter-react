@@ -3,6 +3,9 @@ import type { AppConfig, LiveKitEnvironment } from './lib/types';
 export const LIVEKIT_ENVIRONMENTS: { env: LiveKitEnvironment; label: string }[] = [
   { env: 'PRD', label: 'Production' },
   { env: 'DEV', label: 'Development' },
+  { env: 'DEV_BP', label: 'Development BP' },
+  { env: 'PRD_BP', label: 'Production BP' },
+  { env: 'LOCAL', label: 'Local' },
 ];
 
 export function getEnvironmentConfig(env: LiveKitEnvironment) {

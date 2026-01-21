@@ -66,6 +66,9 @@ export const ConfigPanelStandalone = ({
             >
               <option value="DEV">Development</option>
               <option value="PRD">Production</option>
+              <option value="DEV_BP">Development BP</option>
+              <option value="PRD_BP">Production BP</option>
+              <option value="LOCAL">Local</option>
             </select>
           </div>
 

@@ -10,10 +10,15 @@ import type { LiveKitEnvironment } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 // Environment-specific accent colors
-const ENV_ACCENT_COLORS = {
+const ENV_ACCENT_COLORS: Record<LiveKitEnvironment, { light: string; dark: string }> = {
   DEV: { light: '#1fd5f9', dark: '#1fd5f9' }, // Blue/Aqua for DEV
   PRD: { light: '#f97316', dark: '#fb923c' }, // Orange for PRD
+  DEV_BP: { light: '#1fd5f9', dark: '#1fd5f9' }, // Same as DEV
+  PRD_BP: { light: '#f97316', dark: '#fb923c' }, // Same as PRD
+  LOCAL: { light: '#22c55e', dark: '#4ade80' }, // Green tone
 };
+
+const VALID_ENVIRONMENTS: LiveKitEnvironment[] = ['PRD', 'DEV', 'DEV_BP', 'PRD_BP', 'LOCAL'];
 
 interface WelcomeProps {
   disabled: boolean;
@@ -41,8 +46,8 @@ export const Welcome = ({
   // Load environment from URL on mount
   useEffect(() => {
     const envParam = searchParams.get('env');
-    if (envParam === 'PRD' || envParam === 'DEV') {
-      setSelectedEnvironment(envParam);
+    if (envParam && VALID_ENVIRONMENTS.includes(envParam as LiveKitEnvironment)) {
+      setSelectedEnvironment(envParam as LiveKitEnvironment);
     }
   }, [searchParams]);
 

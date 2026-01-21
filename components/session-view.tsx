@@ -29,9 +29,12 @@ function isAgentAvailable(agentState: AgentState) {
 }
 
 // Environment-specific accent colors
-const ENV_ACCENT_COLORS = {
+const ENV_ACCENT_COLORS: Record<LiveKitEnvironment, { light: string; dark: string }> = {
   DEV: { light: '#1fd5f9', dark: '#1fd5f9' }, // Blue/Aqua for DEV
   PRD: { light: '#f97316', dark: '#fb923c' }, // Orange for PRD
+  DEV_BP: { light: '#1fd5f9', dark: '#1fd5f9' }, // Same as DEV
+  PRD_BP: { light: '#f97316', dark: '#fb923c' }, // Same as PRD
+  LOCAL: { light: '#22c55e', dark: '#4ade80' }, // Green tone
 };
 
 interface SessionViewProps {

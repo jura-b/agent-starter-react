@@ -5,6 +5,17 @@ import type { LiveKitEnvironment } from '@/lib/types';
 const ENV_ACCENT_COLORS = {
   DEV: { light: '#1fd5f9', dark: '#1fd5f9' },
   PRD: { light: '#f97316', dark: '#fb923c' },
+  DEV_BP: { light: '#1fd5f9', dark: '#1fd5f9' }, // Same as DEV
+  PRD_BP: { light: '#f97316', dark: '#fb923c' }, // Same as PRD
+  LOCAL: { light: '#22c55e', dark: '#4ade80' }, // Green tone
+};
+
+const ENV_LABELS: Record<LiveKitEnvironment, string> = {
+  DEV: 'Development',
+  PRD: 'Production',
+  DEV_BP: 'Development BP',
+  PRD_BP: 'Production BP',
+  LOCAL: 'Local',
 };
 
 interface EnvironmentBadgeProps {
@@ -19,7 +30,7 @@ export const EnvironmentBadge = ({ environment }: EnvironmentBadgeProps) => {
         backgroundColor: ENV_ACCENT_COLORS[environment].light,
       }}
     >
-      {environment === 'PRD' ? 'Production' : 'Development'}
+      {ENV_LABELS[environment]}
     </div>
   );
 };

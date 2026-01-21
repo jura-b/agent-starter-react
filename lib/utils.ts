@@ -18,7 +18,7 @@ export interface SimulatedCallUrlParameters {
   to: string;
   suffix?: string;
   type: 'user' | 'human_agent';
-  env?: 'PRD' | 'DEV';
+  env?: 'PRD' | 'DEV' | 'DEV_BP' | 'PRD_BP' | 'LOCAL';
   room?: string; // Static room name (when set, from/to/suffix are ignored)
 }
 
@@ -26,7 +26,7 @@ export interface SipCallUrlParameters {
   sip_from: string;
   sip_to: string;
   sip_trunk: string;
-  env?: 'PRD' | 'DEV';
+  env?: 'PRD' | 'DEV' | 'DEV_BP' | 'PRD_BP' | 'LOCAL';
 }
 
 /**
@@ -241,8 +241,8 @@ export function transcriptionToChatMessage(
       textStream.participantInfo.identity === room.localParticipant.identity
         ? room.localParticipant
         : Array.from(room.remoteParticipants.values()).find(
-            (p) => p.identity === textStream.participantInfo.identity
-          ),
+          (p) => p.identity === textStream.participantInfo.identity
+        ),
   };
 }
 
