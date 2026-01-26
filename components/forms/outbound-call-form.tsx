@@ -187,7 +187,7 @@ export const OutboundCallForm = ({
   // Update URL when SIP form values change (but not on initial mount)
   useEffect(() => {
     // Skip on initial mount to avoid overriding URL parameters
-    const hasSipUserInteracted = sipNumber !== '+66' || sipCallTo !== '' || sipTrunkId !== '';
+    const hasSipUserInteracted = sipNumber !== '' || sipCallTo !== '' || sipTrunkId !== '';
 
     if (hasSipUserInteracted) {
       const sipUrlParams: SipCallUrlParameters = {
