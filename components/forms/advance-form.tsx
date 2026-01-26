@@ -48,7 +48,7 @@ const SIP_FIELDS = [
 const ALL_FIELDS = [...ZAI_FIELDS_COL1, ...ZAI_FIELDS_COL2, ...SIP_FIELDS] as const;
 
 const SELECT_OPTIONS: Record<string, string[]> = {
-  'zai.role': ['AI_AGENT', 'HUMAN_AGENT', 'USER'],
+  'zai.role': ['ai_agent', 'human_agent', 'user'],
   'zai.config_source': ['api', 'session_config_api', 'agent_session_config_api', 'file'],
   'zai.channel_type': ['livekit_audio', 'livekit_text'],
   'zai.sip_direction': ['inbound', 'outbound'],
@@ -153,7 +153,7 @@ export const AdvanceForm = ({ onStartCall, selectedEnvironment, activeTab }: Adv
     }
 
     const participantType: 'user' | 'human_agent' =
-      (participantAttributes['zai.role'] as 'user' | 'human_agent') || 'user';
+      participantAttributes['zai.role'] === 'human_agent' ? 'human_agent' : 'user';
 
     onStartCall({
       roomName: name,

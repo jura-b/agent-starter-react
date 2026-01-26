@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
     // Derive participantType from attributes or default to 'user'
     const participantType: 'user' | 'human_agent' =
-      (cleanedAttributes['zai.role'] as 'user' | 'human_agent') || 'user';
+      cleanedAttributes['zai.role'] === 'human_agent' ? 'human_agent' : 'user';
 
     // Generate participant token
     const randomNumber = Math.floor(Math.random() * 10_000);
