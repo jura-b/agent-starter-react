@@ -22,9 +22,14 @@ interface OutboundCallFormProps {
     participantType: 'user' | 'human_agent';
   }) => void;
   selectedEnvironment: LiveKitEnvironment;
+  activeTab: 'inbound' | 'outbound';
 }
 
-export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundCallFormProps) => {
+export const OutboundCallForm = ({
+  onStartCall,
+  selectedEnvironment,
+  activeTab,
+}: OutboundCallFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -163,6 +168,7 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
       sip_to: sipCallTo.trim(),
       sip_trunk: sipTrunkId.trim(),
       env: selectedEnvironment,
+      tab: activeTab,
     };
 
     const shareableUrl = buildSipCallUrl(urlParams);
@@ -189,12 +195,13 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
         sip_to: sipCallTo.trim(),
         sip_trunk: sipTrunkId.trim(),
         env: selectedEnvironment,
+        tab: activeTab,
       };
 
       const newUrl = buildSipCallUrl(sipUrlParams);
       router.replace(newUrl, { scroll: false });
     }
-  }, [sipNumber, sipCallTo, sipTrunkId, selectedEnvironment, router]);
+  }, [sipNumber, sipCallTo, sipTrunkId, selectedEnvironment, activeTab, router]);
 
   return (
     <div className="w-full max-w-120 space-y-4 px-8">
@@ -225,9 +232,7 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
             className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           >
-            <option value="" selected>
-              Select SIP Trunk
-            </option>
+            <option value="">Select SIP Trunk</option>
             {trunkList.map((trunk) => (
               <option key={trunk.id} value={trunk.id}>
                 {trunk.name} ({trunk.id})

@@ -42,12 +42,17 @@ export const Welcome = ({
   const searchParams = useSearchParams();
   const router = useRouter();
   const [selectedEnvironment, setSelectedEnvironment] = useState<LiveKitEnvironment>('DEV');
+  const [activeTab, setActiveTab] = useState<'inbound' | 'outbound'>('inbound');
 
-  // Load environment from URL on mount
+  // Load environment and tab from URL on mount
   useEffect(() => {
     const envParam = searchParams.get('env');
     if (envParam && VALID_ENVIRONMENTS.includes(envParam as LiveKitEnvironment)) {
       setSelectedEnvironment(envParam as LiveKitEnvironment);
+    }
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'inbound' || tabParam === 'outbound') {
+      setActiveTab(tabParam);
     }
   }, [searchParams]);
 
@@ -75,6 +80,14 @@ export const Welcome = ({
     setSelectedEnvironment(env);
     const params = new URLSearchParams(searchParams.toString());
     params.set('env', env);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Update URL when tab changes
+  const handleTabChange = (tab: 'inbound' | 'outbound') => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
@@ -120,23 +133,50 @@ export const Welcome = ({
         Chat live with your voice AI agent
       </p>
 
-      <div className="mt-6 flex w-full max-w-6xl">
-        {/* Left Column - Inbound Call Form */}
-        <div className="w-1/2 flex-1 justify-items-start border-r border-gray-600">
+      <div className="mt-6 flex w-full max-w-2xl flex-col items-center">
+        {/* Pill Tabs */}
+        <div className="mb-6 inline-flex rounded-full bg-gray-800 p-1">
+          <button
+            type="button"
+            onClick={() => handleTabChange('inbound')}
+            className={cn(
+              'cursor-pointer rounded-full px-6 py-2 text-sm font-medium transition-all',
+              activeTab === 'inbound'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-gray-400 hover:text-white'
+            )}
+          >
+            Inbound
+          </button>
+          <button
+            type="button"
+            onClick={() => handleTabChange('outbound')}
+            className={cn(
+              'cursor-pointer rounded-full px-6 py-2 text-sm font-medium transition-all',
+              activeTab === 'outbound'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-gray-400 hover:text-white'
+            )}
+          >
+            Outbound
+          </button>
+        </div>
+
+        {/* Form Content */}
+        {activeTab === 'inbound' ? (
           <InboundCallForm
             startButtonText={startButtonText}
             onStartCall={handleStartCall}
             selectedEnvironment={selectedEnvironment}
+            activeTab={activeTab}
           />
-        </div>
-
-        {/* Right Column - Outbound Call Form */}
-        <div className="w-1/2 flex-1 justify-items-end">
+        ) : (
           <OutboundCallForm
             onStartCall={handleStartCall}
             selectedEnvironment={selectedEnvironment}
+            activeTab={activeTab}
           />
-        </div>
+        )}
       </div>
 
       <footer className="fixed bottom-5 left-0 z-20 flex w-full items-center justify-center"></footer>

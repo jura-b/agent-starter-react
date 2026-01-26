@@ -20,6 +20,7 @@ export interface SimulatedCallUrlParameters {
   type: 'user' | 'human_agent';
   env?: 'PRD' | 'DEV' | 'DEV_BP' | 'PRD_BP' | 'LOCAL';
   room?: string; // Static room name (when set, from/to/suffix are ignored)
+  tab?: 'inbound' | 'outbound';
 }
 
 export interface SipCallUrlParameters {
@@ -27,6 +28,7 @@ export interface SipCallUrlParameters {
   sip_to: string;
   sip_trunk: string;
   env?: 'PRD' | 'DEV' | 'DEV_BP' | 'PRD_BP' | 'LOCAL';
+  tab?: 'inbound' | 'outbound';
 }
 
 /**
@@ -64,6 +66,11 @@ export function buildSimulatedCallUrl(
     searchParams.set('env', params.env);
   }
 
+  // Add tab if provided
+  if (params.tab) {
+    searchParams.set('tab', params.tab);
+  }
+
   const urlOrigin = origin || (typeof window !== 'undefined' ? window.location.origin : '');
   const urlPathname = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
 
@@ -92,6 +99,11 @@ export function buildSipCallUrl(
   // Add environment if provided
   if (params.env) {
     searchParams.set('env', params.env);
+  }
+
+  // Add tab if provided
+  if (params.tab) {
+    searchParams.set('tab', params.tab);
   }
 
   const urlOrigin = origin || (typeof window !== 'undefined' ? window.location.origin : '');
