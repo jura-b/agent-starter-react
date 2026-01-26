@@ -48,10 +48,11 @@ export const OutboundCallForm = ({
         const response = await fetch(`/api/trunk-list?env=${selectedEnvironment}`);
         const data: TrunkOption[] = await response.json();
         setTrunkList(data);
-        // Set default to first trunk if available
-        if (data.length > 0) {
+        // Set default to first trunk if available, but preserve URL-loaded value
+        const urlTrunk = searchParams.get('sip_trunk');
+        if (!urlTrunk && data.length > 0) {
           setSipTrunkId(data[0].id);
-        } else {
+        } else if (!urlTrunk) {
           setSipTrunkId('');
         }
       } catch (error) {
