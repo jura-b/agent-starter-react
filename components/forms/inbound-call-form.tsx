@@ -18,12 +18,14 @@ interface InboundCallFormProps {
     participantType: 'user' | 'human_agent';
   }) => void;
   selectedEnvironment: LiveKitEnvironment;
+  activeTab: 'inbound' | 'outbound';
 }
 
 export const InboundCallForm = ({
   startButtonText,
   onStartCall,
   selectedEnvironment,
+  activeTab,
 }: InboundCallFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -63,6 +65,7 @@ export const InboundCallForm = ({
           type: participantType,
           room: staticRoomName.trim(),
           env: selectedEnvironment,
+          tab: activeTab,
         }
       : {
           from: fromPhoneNumber.trim(),
@@ -70,6 +73,7 @@ export const InboundCallForm = ({
           type: participantType,
           suffix: suffix.trim() || undefined,
           env: selectedEnvironment,
+          tab: activeTab,
         };
 
     return buildSimulatedCallUrl(urlParams);
@@ -157,6 +161,7 @@ export const InboundCallForm = ({
             type: participantType,
             room: staticRoomName.trim(),
             env: selectedEnvironment,
+            tab: activeTab,
           }
         : {
             from: fromPhoneNumber.trim(),
@@ -164,6 +169,7 @@ export const InboundCallForm = ({
             type: participantType,
             suffix: suffix.trim() || undefined,
             env: selectedEnvironment,
+            tab: activeTab,
           };
 
       const newUrl = buildSimulatedCallUrl(urlParams);
@@ -177,6 +183,7 @@ export const InboundCallForm = ({
     selectedEnvironment,
     useStaticRoomName,
     staticRoomName,
+    activeTab,
     router,
   ]);
 

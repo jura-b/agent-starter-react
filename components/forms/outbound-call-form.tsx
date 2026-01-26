@@ -22,9 +22,14 @@ interface OutboundCallFormProps {
     participantType: 'user' | 'human_agent';
   }) => void;
   selectedEnvironment: LiveKitEnvironment;
+  activeTab: 'inbound' | 'outbound';
 }
 
-export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundCallFormProps) => {
+export const OutboundCallForm = ({
+  onStartCall,
+  selectedEnvironment,
+  activeTab,
+}: OutboundCallFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -43,10 +48,11 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
         const response = await fetch(`/api/trunk-list?env=${selectedEnvironment}`);
         const data: TrunkOption[] = await response.json();
         setTrunkList(data);
-        // Set default to first trunk if available
-        if (data.length > 0) {
+        // Set default to first trunk if available, but preserve URL-loaded value
+        const urlTrunk = searchParams.get('sip_trunk');
+        if (!urlTrunk && data.length > 0) {
           setSipTrunkId(data[0].id);
-        } else {
+        } else if (!urlTrunk) {
           setSipTrunkId('');
         }
       } catch (error) {
@@ -163,6 +169,7 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
       sip_to: sipCallTo.trim(),
       sip_trunk: sipTrunkId.trim(),
       env: selectedEnvironment,
+      tab: activeTab,
     };
 
     const shareableUrl = buildSipCallUrl(urlParams);
@@ -181,7 +188,7 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
   // Update URL when SIP form values change (but not on initial mount)
   useEffect(() => {
     // Skip on initial mount to avoid overriding URL parameters
-    const hasSipUserInteracted = sipNumber !== '+66' || sipCallTo !== '' || sipTrunkId !== '';
+    const hasSipUserInteracted = sipNumber !== '' || sipCallTo !== '' || sipTrunkId !== '';
 
     if (hasSipUserInteracted) {
       const sipUrlParams: SipCallUrlParameters = {
@@ -189,12 +196,13 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
         sip_to: sipCallTo.trim(),
         sip_trunk: sipTrunkId.trim(),
         env: selectedEnvironment,
+        tab: activeTab,
       };
 
       const newUrl = buildSipCallUrl(sipUrlParams);
       router.replace(newUrl, { scroll: false });
     }
-  }, [sipNumber, sipCallTo, sipTrunkId, selectedEnvironment, router]);
+  }, [sipNumber, sipCallTo, sipTrunkId, selectedEnvironment, activeTab, router]);
 
   return (
     <div className="w-full max-w-120 space-y-4 px-8">
@@ -225,9 +233,7 @@ export const OutboundCallForm = ({ onStartCall, selectedEnvironment }: OutboundC
             className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
             required
           >
-            <option value="" selected>
-              Select SIP Trunk
-            </option>
+            <option value="">Select SIP Trunk</option>
             {trunkList.map((trunk) => (
               <option key={trunk.id} value={trunk.id}>
                 {trunk.name} ({trunk.id})
