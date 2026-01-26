@@ -47,6 +47,13 @@ const SIP_FIELDS = [
 
 const ALL_FIELDS = [...ZAI_FIELDS_COL1, ...ZAI_FIELDS_COL2, ...SIP_FIELDS] as const;
 
+const SELECT_OPTIONS: Record<string, string[]> = {
+  'zai.role': ['AI_AGENT', 'HUMAN_AGENT', 'USER'],
+  'zai.config_source': ['api', 'session_config_api', 'agent_session_config_api', 'file'],
+  'zai.channel_type': ['livekit_audio', 'livekit_text'],
+  'zai.sip_direction': ['inbound', 'outbound'],
+};
+
 export const AdvanceForm = ({ onStartCall, selectedEnvironment, activeTab }: AdvanceFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -90,6 +97,39 @@ export const AdvanceForm = ({ onStartCall, selectedEnvironment, activeTab }: Adv
 
   const handleAttributeChange = (key: string, value: string) => {
     setAttributes((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const renderField = (field: { key: string; label: string }) => {
+    const options = SELECT_OPTIONS[field.key];
+    return (
+      <div key={field.key}>
+        <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
+          {field.label} <span className="text-gray-500">(optional)</span>
+        </label>
+        {options ? (
+          <select
+            value={attributes[field.key]}
+            onChange={(e) => handleAttributeChange(field.key, e.target.value)}
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full appearance-none rounded-full border bg-gray-200 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23999%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[position:right_16px_center] bg-no-repeat py-2 pr-10 pl-4 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+          >
+            <option value="">— empty —</option>
+            {options.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type="text"
+            value={attributes[field.key]}
+            onChange={(e) => handleAttributeChange(field.key, e.target.value)}
+            placeholder={`Enter ${field.label}`}
+            className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
+          />
+        )}
+      </div>
+    );
   };
 
   const generateRandomRoomName = () => {
@@ -162,7 +202,7 @@ export const AdvanceForm = ({ onStartCall, selectedEnvironment, activeTab }: Adv
     <div className="w-full max-w-360 space-y-4 px-8">
       <h3 className="text-fg1 mb-4 text-center text-lg font-medium">Advance Mode</h3>
 
-      <form onSubmit={handleSubmit} className="space-x-3 space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-3 space-x-3">
         {/* Room Name */}
         <div>
           <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
@@ -179,62 +219,23 @@ export const AdvanceForm = ({ onStartCall, selectedEnvironment, activeTab }: Adv
         </div>
 
         {/* Attribute fields in 3 columns: zai col1 | zai col2 | sip */}
-        <div className="max-h-[60vh] grid grid-cols-3 gap-6 overflow-y-auto pr-1">
+        <div className="grid max-h-[60vh] grid-cols-3 gap-6 overflow-y-auto pr-1">
           {/* Column 1: zai.* */}
           <div className="space-y-3">
-            <h4 className="text-fg1 pl-4 text-sm font-semibold text-left">ZAI Attributes</h4>
-            {ZAI_FIELDS_COL1.map((field) => (
-              <div key={field.key}>
-                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-                  {field.label} <span className="text-gray-500">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={attributes[field.key]}
-                  onChange={(e) => handleAttributeChange(field.key, e.target.value)}
-                  placeholder={`Enter ${field.label}`}
-                  className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                />
-              </div>
-            ))}
+            <h4 className="text-fg1 pl-4 text-left text-sm font-semibold">ZAI Attributes</h4>
+            {ZAI_FIELDS_COL1.map(renderField)}
           </div>
 
           {/* Column 2: zai.* (continued) */}
           <div className="space-y-3">
-            <h4 className="text-fg1 pl-4 text-sm font-semibold text-left">ZAI Attributes</h4>
-            {ZAI_FIELDS_COL2.map((field) => (
-              <div key={field.key}>
-                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-                  {field.label} <span className="text-gray-500">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={attributes[field.key]}
-                  onChange={(e) => handleAttributeChange(field.key, e.target.value)}
-                  placeholder={`Enter ${field.label}`}
-                  className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                />
-              </div>
-            ))}
+            <h4 className="text-fg1 pl-4 text-left text-sm font-semibold">ZAI Attributes</h4>
+            {ZAI_FIELDS_COL2.map(renderField)}
           </div>
 
           {/* Column 3: sip.* */}
           <div className="space-y-3">
-            <h4 className="text-fg1 pl-4 text-sm font-semibold text-left">SIP Attributes</h4>
-            {SIP_FIELDS.map((field) => (
-              <div key={field.key}>
-                <label className="text-fg1 mb-1 block pl-4 text-left text-sm font-medium">
-                  {field.label} <span className="text-gray-500">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={attributes[field.key]}
-                  onChange={(e) => handleAttributeChange(field.key, e.target.value)}
-                  placeholder={`Enter ${field.label}`}
-                  className="border-primary/50 focus:ring-primary bg-primary/10 w-full rounded-full border bg-gray-200 px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:outline-none"
-                />
-              </div>
-            ))}
+            <h4 className="text-fg1 pl-4 text-left text-sm font-semibold">SIP Attributes</h4>
+            {SIP_FIELDS.map(renderField)}
           </div>
         </div>
 
