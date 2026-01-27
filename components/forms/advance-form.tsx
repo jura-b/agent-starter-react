@@ -255,6 +255,7 @@ export const AdvanceForm = ({ onStartCall, selectedEnvironment, activeTab }: Adv
         </Button>
 
         <Button
+          type="button"
           variant="secondary"
           size="lg"
           onClick={handleRandomRoomNameAndStart}

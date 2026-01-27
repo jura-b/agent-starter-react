@@ -100,6 +100,8 @@ export async function POST(req: Request) {
       console.error(error);
       return new NextResponse(error.message, { status: 500 });
     }
+    console.error('Unknown error:', error);
+    return new NextResponse('Unknown error occurred', { status: 500 });
   }
 }
 
