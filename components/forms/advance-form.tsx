@@ -81,18 +81,24 @@ export const AdvanceForm = ({ onStartCall, selectedEnvironment, activeTab }: Adv
     }
   }, [searchParams]);
 
-  // Sync form values to URL
+  // Sync form values to URL (but not on initial mount)
   useEffect(() => {
-    const params = new URLSearchParams();
-    params.set('tab', activeTab);
-    params.set('env', selectedEnvironment);
-    if (roomName.trim()) params.set('room', roomName.trim());
-    for (const field of ALL_FIELDS) {
-      if (attributes[field.key]?.trim()) {
-        params.set(field.key, attributes[field.key].trim());
+    // Skip on initial mount to avoid overriding URL parameters
+    const hasUserInteracted =
+      roomName !== '' || Object.values(attributes).some((v) => v.trim() !== '');
+
+    if (hasUserInteracted) {
+      const params = new URLSearchParams();
+      params.set('tab', activeTab);
+      params.set('env', selectedEnvironment);
+      if (roomName.trim()) params.set('room', roomName.trim());
+      for (const field of ALL_FIELDS) {
+        if (attributes[field.key]?.trim()) {
+          params.set(field.key, attributes[field.key].trim());
+        }
       }
+      router.replace(`?${params.toString()}`, { scroll: false });
     }
-    router.replace(`?${params.toString()}`, { scroll: false });
   }, [roomName, attributes, selectedEnvironment, activeTab, router]);
 
   const handleAttributeChange = (key: string, value: string) => {
