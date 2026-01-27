@@ -29,6 +29,7 @@ export function App({ appConfig }: AppProps) {
         participantName: string;
         participantType: 'user' | 'human_agent';
         environment: LiveKitEnvironment;
+        participantAttributes?: Record<string, string>;
       }
     | undefined
   >(undefined);

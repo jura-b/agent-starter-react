@@ -25,32 +25,53 @@ export default function useConnectionDetails(appConfig: AppConfig) {
       participantName?: string;
       participantType?: 'user' | 'human_agent';
       environment?: LiveKitEnvironment;
+      participantAttributes?: Record<string, string>;
     }) => {
       setConnectionDetails(null);
-      const url = new URL(
-        process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details',
-        window.location.origin
-      );
 
       let data: ConnectionDetails;
 
       try {
-        const res = await fetch(url.toString(), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Sandbox-Id': appConfig.sandboxId ?? '',
-          },
-          body: JSON.stringify({
-            room_name: connectionData?.roomName,
-            from_phone_number: connectionData?.fromPhoneNumber,
-            destination_phone_number: connectionData?.destinationPhoneNumber,
-            participant_name: connectionData?.participantName,
-            participant_type: connectionData?.participantType,
-            environment: connectionData?.environment || 'DEV',
-          }),
-        });
-        data = await res.json();
+        if (connectionData?.participantAttributes) {
+          // Use advance-connection-details endpoint
+          const url = new URL('/api/advance-connection-details', window.location.origin);
+          const res = await fetch(url.toString(), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Sandbox-Id': appConfig.sandboxId ?? '',
+            },
+            body: JSON.stringify({
+              room_name: connectionData.roomName,
+              environment: connectionData.environment || 'DEV',
+              participant_name: connectionData.participantName,
+              participant_attributes: connectionData.participantAttributes,
+            }),
+          });
+          data = await res.json();
+        } else {
+          // Use existing connection-details endpoint
+          const url = new URL(
+            process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details',
+            window.location.origin
+          );
+          const res = await fetch(url.toString(), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Sandbox-Id': appConfig.sandboxId ?? '',
+            },
+            body: JSON.stringify({
+              room_name: connectionData?.roomName,
+              from_phone_number: connectionData?.fromPhoneNumber,
+              destination_phone_number: connectionData?.destinationPhoneNumber,
+              participant_name: connectionData?.participantName,
+              participant_type: connectionData?.participantType,
+              environment: connectionData?.environment || 'DEV',
+            }),
+          });
+          data = await res.json();
+        }
       } catch (error) {
         console.error('Error fetching connection details:', error);
         throw new Error('Error fetching connection details!');
@@ -85,6 +106,7 @@ export default function useConnectionDetails(appConfig: AppConfig) {
       destinationPhoneNumber: string;
       participantName?: string;
       environment?: LiveKitEnvironment;
+      participantAttributes?: Record<string, string>;
     }) => {
       if (isConnectionDetailsExpired() || !connectionDetails) {
         return fetchConnectionDetails(connectionData);

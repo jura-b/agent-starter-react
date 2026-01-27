@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EnvironmentBadge } from '@/components/environment-badge';
+import { AdvanceForm } from '@/components/forms/advance-form';
 import { InboundCallForm } from '@/components/forms/inbound-call-form';
 import { OutboundCallForm } from '@/components/forms/outbound-call-form';
 import { ConfigPanelStandalone } from '@/components/livekit/config-panel-standalone';
@@ -30,6 +31,7 @@ interface WelcomeProps {
     participantName: string;
     participantType: 'user' | 'human_agent';
     environment: LiveKitEnvironment;
+    participantAttributes?: Record<string, string>;
   }) => void;
 }
 
@@ -42,7 +44,7 @@ export const Welcome = ({
   const searchParams = useSearchParams();
   const router = useRouter();
   const [selectedEnvironment, setSelectedEnvironment] = useState<LiveKitEnvironment>('DEV');
-  const [activeTab, setActiveTab] = useState<'inbound' | 'outbound'>('inbound');
+  const [activeTab, setActiveTab] = useState<'inbound' | 'outbound' | 'advance'>('inbound');
 
   // Load environment and tab from URL on mount
   useEffect(() => {
@@ -51,7 +53,7 @@ export const Welcome = ({
       setSelectedEnvironment(envParam as LiveKitEnvironment);
     }
     const tabParam = searchParams.get('tab');
-    if (tabParam === 'inbound' || tabParam === 'outbound') {
+    if (tabParam === 'inbound' || tabParam === 'outbound' || tabParam === 'advance') {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -84,7 +86,7 @@ export const Welcome = ({
   };
 
   // Update URL when tab changes
-  const handleTabChange = (tab: 'inbound' | 'outbound') => {
+  const handleTabChange = (tab: 'inbound' | 'outbound' | 'advance') => {
     setActiveTab(tab);
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', tab);
@@ -97,6 +99,7 @@ export const Welcome = ({
     destinationPhoneNumber: string;
     participantName: string;
     participantType: 'user' | 'human_agent';
+    participantAttributes?: Record<string, string>;
   }) => {
     onStartCall({ ...data, environment: selectedEnvironment });
   };
@@ -133,7 +136,7 @@ export const Welcome = ({
         Chat live with your voice AI agent
       </p>
 
-      <div className="mt-6 flex w-full max-w-2xl flex-col items-center">
+      <div className="mt-6 flex w-full max-w-6xl flex-col items-center">
         {/* Pill Tabs */}
         <div className="mb-6 inline-flex rounded-full bg-gray-800 p-1">
           <button
@@ -160,6 +163,18 @@ export const Welcome = ({
           >
             Outbound
           </button>
+          <button
+            type="button"
+            onClick={() => handleTabChange('advance')}
+            className={cn(
+              'cursor-pointer rounded-full px-6 py-2 text-sm font-medium transition-all',
+              activeTab === 'advance'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-gray-400 hover:text-white'
+            )}
+          >
+            Advance
+          </button>
         </div>
 
         {/* Form Content */}
@@ -170,8 +185,14 @@ export const Welcome = ({
             selectedEnvironment={selectedEnvironment}
             activeTab={activeTab}
           />
-        ) : (
+        ) : activeTab === 'outbound' ? (
           <OutboundCallForm
+            onStartCall={handleStartCall}
+            selectedEnvironment={selectedEnvironment}
+            activeTab={activeTab}
+          />
+        ) : (
+          <AdvanceForm
             onStartCall={handleStartCall}
             selectedEnvironment={selectedEnvironment}
             activeTab={activeTab}
